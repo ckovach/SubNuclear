@@ -1,0 +1,428 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Subcortical Parcellation with SubNuclear</title><meta name="generator" content="MATLAB 8.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-05-30"><meta name="DC.source" content="do_registration.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Subcortical Parcellation with SubNuclear</h1><!--introduction--><p>The SubNuclear toolbox has been developed with two goals. First is to implement  a relatively straightforward protocol for superimposing atlas-derived substructures on subcortical structures visible in MR's.  The second is to provide a simple and adaptable set of matlab  tools for exploring medical images and localizing electrode positions based imaging artifacts.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Viewing volumes</a></li><li><a href="#3">Subcortical parcellation</a></li><li><a href="#4">FSL</a></li><li><a href="#6">Load Data</a></li><li><a href="#7">Compute the voxel to MNI coordinate transformation</a></li><li><a href="#8">Atlas Coregistration for Amygdala</a></li><li><a href="#10">Save progress</a></li><li><a href="#11">Next apply TPS warping</a></li><li><a href="#13">Project contacts to preop brain</a></li><li><a href="#14">Project the mesh from the preop brain onto the postop as an additional sanity check</a></li><li><a href="#15">Now load the mai atlas subnuclei</a></li><li><a href="#17">Affine transformation into template space (so we can match the axial</a></li><li><a href="#18">view to the nearest page in the template).</a></li></ul></div><h2>Viewing volumes<a name="1"></a></h2><p>SubNuclear is built around the volumeview class.  To instantiate a member of the class, simply type 	&gt;&gt; vol = volumeview at the matlab commandline. You will be prompted to select a volume in .nii or .nii.gz format and the main GUI window will appear with axial, coronal and sagittal views.</p><p><img vspace="5" hspace="5" src="/home/ckovach/svn/anatomy_tracing/volumeviewGUI.png" alt=""> </p><p>To zoom and pan within the axis windows, use the standard options in the matlab figure menu bar.  To adjust the brightness and contrast, change the intensity_range property of the object. For example, 		&gt;&gt;vol.intensity_range  = [0 255]; adjusts the color scale so that 0 or less is black and 255 or greater is white. 1.Working with volumeview objects a. Passing by reference Volumeview objects are handle class objects, which are passed by reference, meaning that if you let 		&gt;&gt; vol2 = vol 	           &gt;&gt; vol3 = vol2 vol, vol2 and vol3 now all refer to the same object, so that any change to vol2 will also be reflected in vol3 and vol. If you want to make a copy of an object so that any change of one a leaves the others unaffected, then you must create a new instance of the class with 		&gt;&gt; vol2 = volumeview(vol) b. Loading and saving 	Volumeview classes can be saved to and loaded from matlab files, however to get the GUI going you need to pass the loaded object as an argument to volumeview: 	 	&gt;&gt; load saved_data  vol 		&gt;&gt; vol = volumevie(vol) 	     c. Methods The following functions associated with the volumeview class can be used at the matlab commandline</p><p>vol.addmesh() :  Add a mesh to the current volume vol.addpoint() :  Add a point to the current volume vol.addtransform() :  add a transform vol.resetaxis()  : reset axes to their original state. Try this if the GUI becomes unresponsive. vol.plotupdate():  update the plot. d. Properties 	The following data can be accessed through the volumeview object vol.volumes   :    Medical image class 		vol.volume.Data:   3-d Image data vol.points  :   array of point objects vol.meshes : array of mesh objects vol.transforms:  array of transform objects 	 vol.intensity_range:  Range used in plotting the volumes.   vol.sisters :  Array of sister volumeview objescts. To make two volumeview objects sisters,  use the command</p><p>vol1.sisters = vol2</p><pre class="codeinput"><span class="comment">% 			Sister objects can be linked so that their axis views remain the same. This is especially useful for comparing two volumes.</span>
+<span class="comment">%</span>
+<span class="comment">%</span>
+
+sid = inputdlg(<span class="string">'Which subject?'</span>);
+sid= sid{1};
+
+ddir = sprintf(<span class="string">'%sfsl.anat'</span>,sid);
+</pre><h2>Subcortical parcellation<a name="3"></a></h2><p>For parcellation, SubNuclear uses FSL's module, FIRST, to acquire a gross parcellation of major subcortical structures. These are then coregistered with atlas-derived objects which contain finer-scale structures.  The full sequence of events is implemented in the matlab script, do_registration.  Each section of the script should be run in sequence, though not all at once, i.e. don't run the command do_registratoin, but evaluate each section in turn. Sections are delimited by' %%'. do_registration first requests the subject ID. All data for a given subject will be placed in the folder [subject_id]fsl.anat</p><h2>FSL<a name="4"></a></h2><p>Subcortical parcellation uses the FIRST module of  FSL (<a href="http://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FIRST/UserGuide">http://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FIRST/UserGuide</a>), implemented in the script fsl_anat. Obviously this means that FSL has to be installed and in the command line path. FIRST provides a gross parcellation of all the major subcortical structures. Accuracy is not 100%, so in general these parcellations will have to be improved with manual editing.  The fsl scripts are self-contained and are generated and run with the matlab command: 	&gt;&gt; run_fsl_script You will be prompted to give the preop and postop MR images, which can usually be found on the  HBRL data server  in the .../Images/Image_processing subfolder of a given subject's data folder. Running the complete script takes about an hour on the computational server. While this is running you can begin to choose control points for the warping between preop and postop brains (next section). The result of the script will be: 1. The original preop MR in standard orientation ( [sid]fsl.anat/T1.nii.gz) 2. Additional volumes with the  original image linearly and non-linearly  coregistered with the MNI152 standard brain, as well as transforms and displacement fields. 3. Volumes with labels for parcellated structures. 4. Meshes for each extracted structure, contained in .vtk files.</p><p>run_fsl_script</p><h2>Load Data<a name="6"></a></h2><p>Meshes can be loaded into the current volume space by right clicking on the mesh list and selecting &#8220;Add&#8221; or by invoking vol.addmesh at the command line. This will allow you to select a .vtk file, which contains the mesh.  Matlab TriRep objects can also be imported using vol.addmesh(TR), where TR is a TriRep object.	After the FSL parcellation is complete, do_registration loads the left and right amygdala and hippocampus  meshes.</p><div><ol><li>Editing Meshes    To manually edit the amygdala meshes, first create a copy of the mesh you want to edit then make sure the &#8220;Adjust mesh&#8221; radio button is enabled. Select the mesh in the mesh list window. Meshes can be edited in three ways:</li><li>Translation within the plan of a view. To do this click on the mesh in one of the axes and drag it.</li><li>Expanding the mesh near the current point. Clicking on 'Expand' expands the mesh in the direction normal to the vertex by an amount that depends on the distance to the current point and angle the between the difference vector and the vertex normal.</li><li>Similarly 'Contract' has the same effect as 'Expand' only in the opposite direction.</li></ol></div><pre class="codeinput"><span class="comment">% KTcheck</span>
+postop = volumeview(sprintf(<span class="string">'%s PostOp'</span>,sid),<span class="string">'post_op_aligned.nii.gz'</span>,ddir);
+preop = volumeview(sprintf(<span class="string">'%s PreOp'</span>,sid),<span class="string">'T1.nii.gz'</span>,ddir);
+postop.intensity_range = [0 400];
+mnih = readnifti(<span class="string">'MNI152_T1_1mm.nii'</span>,true);
+
+preop.sisters= postop;
+</pre><h2>Compute the voxel to MNI coordinate transformation<a name="7"></a></h2><pre class="codeinput">T = textread(fullfile(ddir,<span class="string">'T1_to_MNI_lin.mat'</span>))'; <span class="comment">%#ok&lt;REMFF1&gt;</span>
+tr1 = transforms(<span class="string">'trmat'</span>,T(1:4,:),<span class="string">'label'</span>,<span class="string">'T12MNI'</span>);
+tr2 = transforms(<span class="string">'trmat'</span>,double(mnih.vox2unit)',<span class="string">'label'</span>,<span class="string">'MNI2mm'</span>);
+tr = tr1*tr2;
+tr.label = <span class="string">'vox2MNImm'</span>;
+postop.addtransform(tr);
+preop.addtransform(tr);
+
+
+
+
+
+
+
+helpdlg(<span class="string">'Check the alignment of the images and select matching control points on the preop and postop brains'</span>)
+</pre><h2>Atlas Coregistration for Amygdala<a name="8"></a></h2><p>After you're satisfied with the amygdala parcellation, meshes for amygdalae are loaded from the file,  mai_template_mni_aligned.mat, and subnuclei are loaded from maiwarp2mni.mat  These are extracted from &#8220;Atlas of the Human Brain&#8221; (Mai 2008). The variables, newmeshR and newmeshL contain data for right and left amygdalae, respectively, as TriRep objects  (see matlab help for details on the TriRep class). The vertices in newmeshL and newmeshR are matched to those in the FSL template mesh for the amygdala. Coregistration uses thin plate spline warping to align the vertices in the FSL generated mesh with the atlas-derived mesh. The necessary steps are carried out in do_registration. The resulting warping function is then applied to the vertices of meshes for each subnucleus in order to transform the subnuclei into the subject's image space.</p><pre class="codeinput">structs = {<span class="string">'L Amyg'</span> , fullfile(ddir,<span class="string">'first_results/T1_first-L_Amyg_first.vtk'</span>)
+           <span class="string">'R Amyg'</span> , fullfile(ddir,<span class="string">'first_results/T1_first-R_Amyg_first.vtk'</span>)};
+
+<span class="keyword">for</span> i = 1:length(structs)
+<span class="comment">%     postop.addmesh(structs{i,2},structs{i,1})</span>
+     preop.addmesh(structs{i,2},structs{i,1})
+<span class="keyword">end</span>
+
+helpdlg(<span class="string">'Now adjust the amygdalae meshes'</span>)
+</pre><p>helpdlg('Now adjust the meshes')</p><p>for i = 3:length(preop.meshes)    postop.addmesh(preop.meshes(i));</p><p>end</p><h2>Save progress<a name="10"></a></h2><pre class="codeinput">save(fullfile(ddir,sprintf(<span class="string">'%s_volview'</span>,sid)),<span class="string">'preop'</span>,<span class="string">'postop'</span>),
+</pre><h2>Next apply TPS warping<a name="11"></a></h2><pre class="codeinput"><span class="comment">% preopcontacts = volumeview(preop);</span>
+<span class="comment">% postopcontacts = volumeview(postop);</span>
+
+<span class="comment">% fprintf('Select control points on each image. Make sure they are in the same order')</span>
+x1 = cat(1,preop.points.coord); x1(:,4) = 1;
+x2 = cat(1,postop.points.coord); x2(:,4) = 1;
+<span class="comment">% TlinL = x1([1:10,23],:)\x2([1:10,23],:);</span>
+<span class="comment">% TlinR = x1([7:9,11:22],:)\x2([7:9,11:22],:);</span>
+
+<span class="comment">% mx1L = preop.meshes(1).trirep.X; mx1L(:,4) = 1;</span>
+<span class="comment">% mx2L = postop.meshes(1).trirep.X;mx2L(:,4) = 1;</span>
+<span class="comment">% TmeshL = mx1L\mx2L;</span>
+<span class="comment">% % mx2lR = mx1L*TlinR;</span>
+<span class="comment">% mx1R = preop.meshes(2).trirep.X; mx1R(:,4) = 1;</span>
+<span class="comment">% mx2R = postop.meshes(2).trirep.X;mx2R(:,4) = 1;</span>
+<span class="comment">% TmeshR = mx1R\mx2R;</span>
+<span class="comment">% % mx2lL = mx1R*TlinL;</span>
+
+mwarp = tpswarp(x1(:,1:3),x2(:,1:3)); <span class="comment">% this warps from preop to postop</span>
+imwarp = tpswarp(x2(:,1:3),x1(:,1:3)); <span class="comment">% this from postop to preop</span>
+<span class="comment">% mx2tps  = mwarp(mx1(:,1:3));</span>
+
+XL = preop.meshes(end-1).trirep.X; XL(:,4)=1;
+<span class="comment">% mlinL = TriRep(preop.meshes(1).trirep.Triangulation,XL*TlinL(:,1:3));</span>
+mtpsL = TriRep(preop.meshes(end-2).trirep.Triangulation,mwarp(XL(:,1:3)));
+XR = preop.meshes(end).trirep.X; XR(:,4)=1;
+<span class="comment">% mlinR = TriRep(preop.meshes(2).trirep.Triangulation,XR*TlinR(:,1:3));</span>
+mtpsR = TriRep(preop.meshes(end-1).trirep.Triangulation,mwarp(XR(:,1:3)));
+</pre><pre class="codeinput">figure(postop.fig)
+helpdlg(<span class="string">'Now add the contact locations'</span>)
+</pre><h2>Project contacts to preop brain<a name="13"></a></h2><pre class="codeinput"><span class="keyword">for</span> i =length(preop.points)+1:length(postop.points);
+    pt= postop.points(i);
+
+    preop.addpoint(pt.label,imwarp(pt.coord));
+<span class="keyword">end</span>
+</pre><h2>Project the mesh from the preop brain onto the postop as an additional sanity check<a name="14"></a></h2><p>postop.addmesh(mlinL,'LA Lin');</p><pre class="codeinput">postop.addmesh(mtpsL,<span class="string">'LA TPS'</span>);
+<span class="comment">% postop.addmesh(mlinR,'RA Lin');</span>
+postop.addmesh(mtpsR,<span class="string">'RA TPS'</span>);
+</pre><h2>Now load the mai atlas subnuclei<a name="15"></a></h2><pre class="codeinput">load <span class="string">maiwarp2mni</span>  <span class="comment">% Atlas warped into MNI space based on FSL meshes</span>
+load <span class="string">mai_template_mni_aligned</span> <span class="string">newmeshR</span> <span class="string">newmeshL</span> <span class="string">tmpl2maimatR</span> <span class="string">tmpl2maimatL</span> <span class="comment">% Atlas with vertices matcehd to FSL vertices</span>
+</pre><pre class="codeinput">tr = preop.transforms(3); <span class="comment">%This is the vox to MNI transform</span>
+<span class="comment">% itr = preop.transforms(3).itr(x);</span>
+
+
+<span class="comment">% tr = @(x)x;</span>
+<span class="comment">% itr = @(x)x;s</span>
+warpfunL  = tpswarp(tr.itr(newmeshL.X),preop.meshes(3).trirep.X,.1);  <span class="comment">% Left amygdala</span>
+<span class="comment">% warpfunL =@(x) wrpL(x*diag([-1 1 1]));</span>
+
+warpfunR = tpswarp(tr.itr(newmeshR.X),preop.meshes(4).trirep.X,.1); <span class="comment">% Right amygdala</span>
+
+[iwarpfunL,AL]   = tpswarp(tr.tr(preop.meshes(3).trirep.X),newmeshL.X*10);
+<span class="comment">% iwarpfunL  = @(x) iwpL(x*diag([-1 1 1]));</span>
+[iwarpfunR,AR] = tpswarp(tr.tr(preop.meshes(4).trirep.X),newmeshR.X*10);
+</pre><h2>Affine transformation into template space (so we can match the axial<a name="17"></a></h2><h2>view to the nearest page in the template).<a name="18"></a></h2><pre class="codeinput">AL(4,4) = 1; AR(4,4) = 1;
+tmpl2maimatL(4,4) = 1; tmpl2maimatR(4,4) = 1;
+preop.addtransform(tr.trmat*AL*tmpl2maimatL,<span class="string">'Left Amyg. vox 2 atlas'</span>);
+preop.addtransform(tr.trmat*AR*tmpl2maimatR,<span class="string">'Right Amyg. vox 2 atlas'</span>);
+
+
+kp = find(arrayfun(@(x)~isempty(x.warped),maiwarpL));
+kp(end) = [];
+
+colors = {<span class="string">'k'</span>,<span class="string">'r'</span>,<span class="string">'g'</span>,<span class="string">'y'</span>,<span class="string">'m'</span>,<span class="string">'c'</span>,<span class="string">'c'</span>,<span class="string">'k'</span>,<span class="string">'b'</span>,<span class="string">'b'</span>};
+<span class="keyword">for</span> i = 1:length(kp)
+    wrpR = TriRep(maiwarpR(kp(i)).warped.Triangulation,warpfunR(tr.itr(maiwarpR(kp(i)).warped.X)));
+    preop.addmesh(wrpR,sprintf(<span class="string">'R %s'</span>,maiwarpR(kp(i)).label));
+
+<span class="keyword">end</span>
+<span class="keyword">for</span> i = 1:length(kp)
+    wrpL = TriRep(maiwarpL(kp(i)).warped.Triangulation,warpfunL(tr.itr(maiwarpL(kp(i)).warped.X)));
+    preop.addmesh(wrpL,sprintf(<span class="string">'L %s'</span>,maiwarpL(kp(i)).label));
+<span class="keyword">end</span>
+<span class="comment">%</span>
+<span class="comment">% for i = 1:length(postopcontacts.points)</span>
+<span class="comment">% %     contacts(i).coord = postopcontacts.points(i).coord;</span>
+<span class="comment">% %     contacts(i).label= postopcontacts.points(i).label;</span>
+<span class="comment">%</span>
+<span class="comment">%     postop.addpoint(postopcontacts.points(i).label,imwarp(postopcontacts.points(i).coord));</span>
+<span class="comment">% end</span>
+<span class="comment">%</span>
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2012b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Subcortical Parcellation with SubNuclear
+%
+% 
+% 
+% The SubNuclear toolbox has been developed with two goals. First is to implement  a relatively straightforward protocol for superimposing atlas-derived substructures on subcortical structures visible in MR's.  The second is to provide a simple and adaptable set of matlab  tools for exploring medical images and localizing electrode positions based imaging artifacts.  
+%% Viewing volumes
+% 
+% 
+% SubNuclear is built around the volumeview class.  To instantiate a member of the class, simply type
+% 	>> vol = volumeview
+% at the matlab commandline. You will be prompted to select a volume in .nii or .nii.gz format and the main GUI window will appear with axial, coronal and sagittal views. 
+% 
+% <</home/ckovach/svn/anatomy_tracing/volumeviewGUI.png>>
+% 
+% To zoom and pan within the axis windows, use the standard options in the matlab figure menu bar.
+%  To adjust the brightness and contrast, change the intensity_range property of the object. For example,
+% 		>>vol.intensity_range  = [0 255]; 
+% adjusts the color scale so that 0 or less is black and 255 or greater is white.
+% 1.Working with volumeview objects
+% a. Passing by reference
+% Volumeview objects are handle class objects, which are passed by reference, meaning that if you let
+% 		>> vol2 = vol
+% 	           >> vol3 = vol2
+% vol, vol2 and vol3 now all refer to the same object, so that any change to vol2 will also be reflected in vol3 and vol. If you want to make a copy of an object so that any change of one a leaves the others unaffected, then you must create a new instance of the class with
+% 		>> vol2 = volumeview(vol)
+% b. Loading and saving
+% 	Volumeview classes can be saved to and loaded from matlab files, however to get the GUI going you need to pass the loaded object as an argument to volumeview:
+% 	 	>> load saved_data  vol
+% 		>> vol = volumevie(vol)
+% 	     c. Methods
+% The following functions associated with the volumeview class can be used at the matlab commandline
+% 
+% vol.addmesh() :  Add a mesh to the current volume
+% vol.addpoint() :  Add a point to the current volume
+% vol.addtransform() :  add a transform
+% vol.resetaxis()  : reset axes to their original state. Try this if the GUI becomes unresponsive.
+% vol.plotupdate():  update the plot.
+% d. Properties
+% 	The following data can be accessed through the volumeview object
+% vol.volumes   :    Medical image class
+% 		vol.volume.Data:   3-d Image data
+% vol.points  :   array of point objects
+% vol.meshes : array of mesh objects
+% vol.transforms:  array of transform objects
+% 	 vol.intensity_range:  Range used in plotting the volumes.
+%   vol.sisters :  Array of sister volumeview objescts. To make two volumeview objects sisters,  use the command
+%%
+% vol1.sisters = vol2
+
+% 			Sister objects can be linked so that their axis views remain the same. This is especially useful for comparing two volumes.
+% 
+% 
+
+sid = inputdlg('Which subject?');
+sid= sid{1};
+
+ddir = sprintf('%sfsl.anat',sid);
+%% Subcortical parcellation
+% 
+% For parcellation, SubNuclear uses FSL's module, FIRST, to acquire a gross parcellation of major subcortical structures. These are then coregistered with atlas-derived objects which contain finer-scale structures.  The full sequence of events is implemented in the matlab script, do_registration.  Each section of the script should be run in sequence, though not all at once, i.e. don't run the command do_registratoin, but evaluate each section in turn. Sections are delimited by' %%'. 
+% do_registration first requests the subject ID. All data for a given subject will be placed in the folder [subject_id]fsl.anat
+%%% FSL
+% 
+% Subcortical parcellation uses the FIRST module of  FSL (http://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FIRST/UserGuide), implemented in the script fsl_anat. Obviously this means that FSL has to be installed and in the command line path. FIRST provides a gross parcellation of all the major subcortical structures. Accuracy is not 100%, so in general these parcellations will have to be improved with manual editing.  The fsl scripts are self-contained and are generated and run with the matlab command: 
+% 	>> run_fsl_script
+% You will be prompted to give the preop and postop MR images, which can usually be found on the  HBRL data server  in the .../Images/Image_processing subfolder of a given subject's data folder. Running the complete script takes about an hour on the computational server. While this is running you can begin to choose control points for the warping between preop and postop brains (next section).  
+% The result of the script will be:
+% 1. The original preop MR in standard orientation ( [sid]fsl.anat/T1.nii.gz)
+% 2. Additional volumes with the  original image linearly and non-linearly  coregistered with the MNI152 standard brain, as well as transforms and displacement fields. 
+% 3. Volumes with labels for parcellated structures.
+% 4. Meshes for each extracted structure, contained in .vtk files.   
+% 
+%%
+% run_fsl_script
+
+%%% Load Data
+% 	Meshes can be loaded into the current volume space by right clicking on the mesh list and selecting “Add” or by invoking vol.addmesh at the command line. This will allow you to select a .vtk file, which contains the mesh.  Matlab TriRep objects can also be imported using vol.addmesh(TR), where TR is a TriRep object.	After the FSL parcellation is complete, do_registration loads the left and right amygdala and hippocampus  meshes. 
+% 
+% # Editing Meshes
+%    To manually edit the amygdala meshes, first create a copy of the mesh you want to edit then make sure the “Adjust mesh” radio button is enabled. Select the mesh in the mesh list window. Meshes can be edited in three ways:
+% # Translation within the plan of a view. To do this click on the mesh in one of the axes and drag it.
+% # Expanding the mesh near the current point. Clicking on 'Expand' expands the mesh in the direction normal to the vertex by an amount that depends on the distance to the current point and angle the between the difference vector and the vertex normal. 
+% # Similarly 'Contract' has the same effect as 'Expand' only in the opposite direction.
+
+% KTcheck
+postop = volumeview(sprintf('%s PostOp',sid),'post_op_aligned.nii.gz',ddir);
+preop = volumeview(sprintf('%s PreOp',sid),'T1.nii.gz',ddir);
+postop.intensity_range = [0 400];
+mnih = readnifti('MNI152_T1_1mm.nii',true);
+
+preop.sisters= postop;
+
+%%% Compute the voxel to MNI coordinate transformation
+T = textread(fullfile(ddir,'T1_to_MNI_lin.mat'))'; %#ok<REMFF1>
+tr1 = transforms('trmat',T(1:4,:),'label','T12MNI');
+tr2 = transforms('trmat',double(mnih.vox2unit)','label','MNI2mm');
+tr = tr1*tr2;
+tr.label = 'vox2MNImm';
+postop.addtransform(tr);
+preop.addtransform(tr);
+
+
+
+
+
+
+
+helpdlg('Check the alignment of the images and select matching control points on the preop and postop brains')
+%% Atlas Coregistration for Amygdala
+% 
+% After you're satisfied with the amygdala parcellation, meshes for amygdalae are loaded from the file,  mai_template_mni_aligned.mat, and subnuclei are loaded from maiwarp2mni.mat
+%  These are extracted from “Atlas of the Human Brain” (Mai 2008). The variables, newmeshR and newmeshL contain data for right and left amygdalae, respectively, as TriRep objects  (see matlab help for details on the TriRep class). The vertices in newmeshL and newmeshR are matched to those in the FSL template mesh for the amygdala. Coregistration uses thin plate spline warping to align the vertices in the FSL generated mesh with the atlas-derived mesh. The necessary steps are carried out in do_registration. The resulting warping function is then applied to the vertices of meshes for each subnucleus in order to transform the subnuclei into the subject's image space. 
+% 
+
+structs = {'L Amyg' , fullfile(ddir,'first_results/T1_first-L_Amyg_first.vtk')
+           'R Amyg' , fullfile(ddir,'first_results/T1_first-R_Amyg_first.vtk')};
+
+for i = 1:length(structs)
+%     postop.addmesh(structs{i,2},structs{i,1})
+     preop.addmesh(structs{i,2},structs{i,1})
+end
+
+helpdlg('Now adjust the amygdalae meshes')
+
+
+%%
+% helpdlg('Now adjust the meshes')
+% 
+% for i = 3:length(preop.meshes)
+%    postop.addmesh(preop.meshes(i));
+%    
+% end
+
+
+%% Save progress
+save(fullfile(ddir,sprintf('%s_volview',sid)),'preop','postop'),
+%% Next apply TPS warping
+
+% preopcontacts = volumeview(preop);
+% postopcontacts = volumeview(postop);
+
+% fprintf('Select control points on each image. Make sure they are in the same order')
+x1 = cat(1,preop.points.coord); x1(:,4) = 1;
+x2 = cat(1,postop.points.coord); x2(:,4) = 1;
+% TlinL = x1([1:10,23],:)\x2([1:10,23],:);
+% TlinR = x1([7:9,11:22],:)\x2([7:9,11:22],:);
+
+% mx1L = preop.meshes(1).trirep.X; mx1L(:,4) = 1;
+% mx2L = postop.meshes(1).trirep.X;mx2L(:,4) = 1;
+% TmeshL = mx1L\mx2L;
+% % mx2lR = mx1L*TlinR;
+% mx1R = preop.meshes(2).trirep.X; mx1R(:,4) = 1;
+% mx2R = postop.meshes(2).trirep.X;mx2R(:,4) = 1;
+% TmeshR = mx1R\mx2R;
+% % mx2lL = mx1R*TlinL;
+
+mwarp = tpswarp(x1(:,1:3),x2(:,1:3)); % this warps from preop to postop
+imwarp = tpswarp(x2(:,1:3),x1(:,1:3)); % this from postop to preop
+% mx2tps  = mwarp(mx1(:,1:3));
+
+XL = preop.meshes(end-1).trirep.X; XL(:,4)=1;
+% mlinL = TriRep(preop.meshes(1).trirep.Triangulation,XL*TlinL(:,1:3));
+mtpsL = TriRep(preop.meshes(end-2).trirep.Triangulation,mwarp(XL(:,1:3)));
+XR = preop.meshes(end).trirep.X; XR(:,4)=1;
+% mlinR = TriRep(preop.meshes(2).trirep.Triangulation,XR*TlinR(:,1:3));
+mtpsR = TriRep(preop.meshes(end-1).trirep.Triangulation,mwarp(XR(:,1:3)));
+
+
+%%
+figure(postop.fig)
+helpdlg('Now add the contact locations')
+%% Project contacts to preop brain
+for i =length(preop.points)+1:length(postop.points);
+    pt= postop.points(i);
+    
+    preop.addpoint(pt.label,imwarp(pt.coord));
+end
+
+%%  Project the mesh from the preop brain onto the postop as an additional sanity check
+% postop.addmesh(mlinL,'LA Lin');
+postop.addmesh(mtpsL,'LA TPS');
+% postop.addmesh(mlinR,'RA Lin');
+postop.addmesh(mtpsR,'RA TPS');
+
+%% Now load the mai atlas subnuclei
+load maiwarp2mni  % Atlas warped into MNI space based on FSL meshes
+load mai_template_mni_aligned newmeshR newmeshL tmpl2maimatR tmpl2maimatL % Atlas with vertices matcehd to FSL vertices
+
+%%
+tr = preop.transforms(3); %This is the vox to MNI transform
+% itr = preop.transforms(3).itr(x);
+
+
+% tr = @(x)x;
+% itr = @(x)x;s
+warpfunL  = tpswarp(tr.itr(newmeshL.X),preop.meshes(3).trirep.X,.1);  % Left amygdala
+% warpfunL =@(x) wrpL(x*diag([-1 1 1]));
+
+warpfunR = tpswarp(tr.itr(newmeshR.X),preop.meshes(4).trirep.X,.1); % Right amygdala
+
+[iwarpfunL,AL]   = tpswarp(tr.tr(preop.meshes(3).trirep.X),newmeshL.X*10);
+% iwarpfunL  = @(x) iwpL(x*diag([-1 1 1]));
+[iwarpfunR,AR] = tpswarp(tr.tr(preop.meshes(4).trirep.X),newmeshR.X*10);
+
+%%% Affine transformation into template space (so we can match the axial
+%%% view to the nearest page in the template).
+AL(4,4) = 1; AR(4,4) = 1;
+tmpl2maimatL(4,4) = 1; tmpl2maimatR(4,4) = 1;
+preop.addtransform(tr.trmat*AL*tmpl2maimatL,'Left Amyg. vox 2 atlas');
+preop.addtransform(tr.trmat*AR*tmpl2maimatR,'Right Amyg. vox 2 atlas');
+
+
+kp = find(arrayfun(@(x)~isempty(x.warped),maiwarpL));
+kp(end) = [];
+
+colors = {'k','r','g','y','m','c','c','k','b','b'};
+for i = 1:length(kp)   
+    wrpR = TriRep(maiwarpR(kp(i)).warped.Triangulation,warpfunR(tr.itr(maiwarpR(kp(i)).warped.X)));
+    preop.addmesh(wrpR,sprintf('R %s',maiwarpR(kp(i)).label)); 
+    
+end
+for i = 1:length(kp)   
+    wrpL = TriRep(maiwarpL(kp(i)).warped.Triangulation,warpfunL(tr.itr(maiwarpL(kp(i)).warped.X)));
+    preop.addmesh(wrpL,sprintf('L %s',maiwarpL(kp(i)).label));
+end
+% 
+% for i = 1:length(postopcontacts.points)
+% %     contacts(i).coord = postopcontacts.points(i).coord;
+% %     contacts(i).label= postopcontacts.points(i).label;
+%     
+%     postop.addpoint(postopcontacts.points(i).label,imwarp(postopcontacts.points(i).coord));
+% end
+% 
+
+
+
+##### SOURCE END #####
+--></body></html>
