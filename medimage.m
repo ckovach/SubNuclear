@@ -159,16 +159,17 @@ classdef medimage <handle
                     otherwise
                     error('Unrecognized file extension %s',ext)
                end
-               perm = [1 2 3];
-               e = eye(4); e = e([perm,4],:);
+               nd = ndims(img);
+               perm = 1:nd;
+               e = eye(nd+1); e = e([perm,nd+1],:);
               img = permute(img,perm);
                me.header = hdr;
-               me.vox2mm = e(1:3,1:3)*hdr.vox2unit(perm,:)*e'^-1;
+               me.vox2mm = e(1:3,1:3)*hdr.vox2unit(perm(1:3),:)*e(1:4,1:4)'^-1;
                if me.load2mem
                    me.imgDat = img;
                end
                if length(me.vox2mm)>=3
-                   me.std_orientation = any(diag(me.vox2mm(1:3,1:3))~=[-1 1 1]');
+                   me.std_orientation = any(diag(me.vox2mm(1:3,1:3))~=[-1 1 1 ]');
                end           
         end   
         %%%%%
@@ -178,7 +179,7 @@ classdef medimage <handle
             curr_orient = sign(me.vox2mm(1:3,1:3)).*(abs(me.vox2mm(1:3,1:3))==repmat(max(abs(me.vox2mm(1:3,1:3))),3,1));
             chorient = curr_orient'*stdorient;
             sz = size(me.Data);
-            zer = (sz-1)'.*any(chorient<0,2);
+            zer = (sz(1:3)-1)'.*any(chorient<0,2);
 %             perm = double(abs(chorient)*(1:3)');
 %             if any(zer~=0)
 %                 Q = me.Data;

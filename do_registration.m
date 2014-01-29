@@ -100,10 +100,10 @@ imwarp = tpswarp(x2(:,1:3),x1(:,1:3)); % this from postop to preop
 
 XL = preop.meshes(end-1).trirep.X; XL(:,4)=1;
 % mlinL = TriRep(preop.meshes(1).trirep.Triangulation,XL*TlinL(:,1:3));
-mtpsL = TriRep(preop.meshes(end-2).trirep.Triangulation,mwarp(XL(:,1:3)));
+mtpsL = TriRep(preop.meshes(end-1).trirep.Triangulation,mwarp(XL(:,1:3)));
 XR = preop.meshes(end).trirep.X; XR(:,4)=1;
 % mlinR = TriRep(preop.meshes(2).trirep.Triangulation,XR*TlinR(:,1:3));
-mtpsR = TriRep(preop.meshes(end-1).trirep.Triangulation,mwarp(XR(:,1:3)));
+mtpsR = TriRep(preop.meshes(end).trirep.Triangulation,mwarp(XR(:,1:3)));
 
 
 %%

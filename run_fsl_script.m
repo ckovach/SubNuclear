@@ -9,7 +9,7 @@
 % $Author$
 % ------------------------------------------------
 
-run_script = true; %generates and runs script if true, otherwise generates script only
+run_script = false; %generates and runs script if true, otherwise generates script only
 % 
 % srvdir = '/hbrl/Data/';
 % if ~exist(srvdir,'dir')
@@ -32,7 +32,7 @@ scrfname = sprintf('run_fsl_%s.sh',sid); % bash script name
 com1 = sprintf('cp %s %sT1temp_orig%s',fullfile(pthpreop,fnpreop),sid,ext);
 com2 = sprintf('fslreorient2std %sT1temp_orig  %sT1temp',sid,sid);
 com3 = 'echo ''Linear coregistration of preop and postop images...''';
-com4 = sprintf('flirt -in %s -ref %sT1temp -o %spostop_aligned -omat %spost_to_pre  -bins 256 -cost corratio -searchrx -180 180 -searchry -180 180 -searchrz -180 180 -dof 12  -interp trilinear &',fullfile(pthpostop,fnpostop),sid,sid,sid);
+com4 = sprintf('flirt -in %s -ref %sT1temp -o %spostop_aligned -omat %spost_to_pre.mat  -bins 256 -cost corratio -searchrx -180 180 -searchry -180 180 -searchrz -180 180 -dof 12  -interp trilinear &',fullfile(pthpostop,fnpostop),sid,sid,sid);
 com5 = sprintf('fsl_anat --weakbias  -i %sT1temp -o %s --noreorient --clobber',sid,odir);
 com6 =  sprintf('fslmaths %spostop_aligned  %s.anat%spostop_aligned',sid,odir,filesep);
 com7 =  sprintf('mv %spost_to_pre.mat  %s.anat%spost_to_pre.mat',sid,odir,filesep);
@@ -60,4 +60,6 @@ system(sprintf('chmod 755 %s',scrfname)) ;
 %% Now run the script in a separate terminal
 if run_script
     [stat,msg] = system(sprintf('xterm -e "./%s;read" &',scrfname) );
+else
+    fprintf('\nRun the FSL pipeline with the command:\n\n\t[stat,msg] = system(''xterm -e "./%s;read" &'')\n\n',scrfname)
 end
