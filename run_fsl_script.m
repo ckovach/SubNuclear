@@ -29,6 +29,9 @@ end
 scrfname = sprintf('run_fsl_%s.sh',sid); % bash script name
 
 [pth,fn,ext] = fileparts(fnpreop);
+if isequal(ext,'.gz')
+    ext = '.nii.gz';
+end
 com1 = sprintf('cp %s %sT1temp_orig%s',fullfile(pthpreop,fnpreop),sid,ext);
 com2 = sprintf('fslreorient2std %sT1temp_orig  %sT1temp',sid,sid);
 com3 = 'echo ''Linear coregistration of preop and postop images...''';
