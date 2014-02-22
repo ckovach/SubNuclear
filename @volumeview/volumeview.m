@@ -815,7 +815,7 @@ classdef volumeview < handle
      function annotationUpdate(me,src,evnt)
         cro =  me.current_object(1);
         fld = class(cro);
-        indx = ismember(me.(fld) , cro);
+        indx = ismember([me.(fld).objectid] , [cro.objectid]);
         
         obj = me.(fld)(indx);
         if isempty(obj),return, end
