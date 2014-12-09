@@ -1,5 +1,5 @@
 
-function [warpfun,d,nlfun] = tpswarp(X1,X2,reg,dim)
+function [warpfun,d,nlfun,D] = tpswarp(X1,X2,reg,dim)
 
 % Warpfun = tpswarp(Xfrom,Xto, reg)
 % Thin-plate spline warping. 
@@ -64,8 +64,11 @@ TPScoef = Q2*(((Q2'*KX(X1)*Q2+reg*eye(size(Q2,2))))'\(Q2'*X2));
 d = R^-1*Q1'*(X2-KX(X1)*TPScoef);
 nlfun = @(x)KX(x)*TPScoef;
 warpfun = @(x) pad1(x)*d + nlfun(x);
-% if nargout > 2
-% end
+
+
+ if nargout > 3
+     D = @(x)mdxc(x,X1);
+ end
 
 %%%%
 function K = tpsmat(x,c,dim) 

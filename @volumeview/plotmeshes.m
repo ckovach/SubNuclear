@@ -17,6 +17,13 @@
           nv = me.plotax(k).normvec;
          for i = 1:length(me.meshes)
              vis = 'on';
+               
+             if length(me.meshes(i).ploth)<k || ~ishandle(me.meshes(i).ploth(k))
+                       plh = plot(me.plotax(k).h,0,0,'.',varargin{:});
+                    me.meshes(i).ploth(k) =plh;
+                    set(plh,'ButtonDownFcn',@(a,b)me.meshButtonDown(a,b));
+             end
+             
              if ~me.meshes(i).show                     
                  slax = [0 0];
 %                  set(me.meshes(i).ploth,'visible','off');
@@ -40,7 +47,8 @@
              dslax = zscore(sum(diff(slax).^2,2));
 
              slax(dslax>10,:) = nan; %Large jumps are probably related to misordering
-
+          
+             
              set(me.meshes(i).ploth(k),'xdata',slax(:,1),'ydata',slax(:,2),'zdata',ones(size(slax(:,1)))*.5,'color',me.meshes(i).plotcolor,'linestyle',me.meshes(i).linestyle,'visible',vis,me.meshes(i).plotargs{:}) 
          end
 
@@ -50,6 +58,12 @@
             for i = 1:length(me.points)
 %             for i = find([me.points.show])
 %                 try
+                if length(me.points(i).ploth)<k || ~ishandle(me.points(i).ploth(k))
+                    plh = plot(me.plotax(k).h,0,0,'.',varargin{:});
+                    me.points(i).ploth(k) =plh;
+                    set(plh,'ButtonDownFcn',@(a,b)me.meshButtonDown(a,b))
+                end
+
                if me.points(i).show
                     pp = me.points(i).coord;
                     dp = pp-repmat(me.current_point,size(pp,1),1);

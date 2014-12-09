@@ -31,7 +31,7 @@ helpdlg('Make sure that preop and postop images are correctly aligned. If they a
 mnih = readnifti('MNI152_T1_1mm.nii',true);
 T = textread(fullfile(ddir,'T1_to_MNI_lin.mat'))'; %#ok<REMFF1> 
 Tfov = textread(fullfile(ddir,'T1_roi2nonroi.mat'))'; %Transformation into smaller field of view
-T(1:3,1:3) = abs(diag(diag(preop.transforms(1).trmat(1:3,1:3))))*T(1:3,1:3); % FLIRT uses voxel x size coordinates
+T(1:3,1:3) = diag(max(abs(preop.transforms(1).trmat(1:3,1:3))))*T(1:3,1:3); % FLIRT uses voxel x size coordinates
  tr2std = preop.volumes(1).tr2std; % FLIRT also computes transform from standard space;
 % tr1 = transforms('trmat',Tfov(1:4,:)^-1,'label','tr2fov')*tr2std*transforms('trmat',T(1:4,:),'label','T12MNI');
 trfov = transforms('trmat',Tfov(1:4,:)^-1,'label','tr2fov'); %Transform to field of view
@@ -45,6 +45,8 @@ preop.addtransform(tr);
 
 
 
+
+save(fullfile(ddir,sprintf('%s_volview',sid)),'preop','postop'),
 
 
 
@@ -168,3 +170,4 @@ for i = 1:length(kp)
     preop.meshes(end).plotargs = {'linewidth',2};
 end
 
+save(fullfile(ddir,sprintf('%s_volview',sid)),'preop','postop'),
