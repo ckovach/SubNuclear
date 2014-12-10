@@ -171,3 +171,27 @@ for i = 1:length(kp)
 end
 
 save(fullfile(ddir,sprintf('%s_volview',sid)),'preop','postop'),
+
+
+%% Conversion to Freesurfer tkRAS
+%
+% This assumes that freesurfer bin files are in the OS path
+%
+
+freesurfer_path = 'FS';  % Path to freesurfer subject folder  
+
+
+res = system( sprintf('mri_convert %s%smri%sorig.mgz %s%sFST1.nii',freesurfer_directory,filesep,filesep,ddir,filesep));
+fs = volumeview('FST1','FST1.nii',ddir);
+freesurfer_directory = fullfile(freesurfer_path,sprintf('pt%s',sid));
+[res,out] = system( sprintf('mri_info --vox2ras-tkr %s%smri%sorig.mgz',freesurfer_directory,filesep,filesep));
+ v2rtk = str2num(out)';
+v2fs = preop.transforms(1).trmat*fs(1).transforms(1).trmat^-1;
+v2fsras = v2fs*v2rtk;
+
+preop.addtransform(v2fs(:,1:3),'freesurfer vox');
+preop.addtransform(v2fsras(:,1:3),'freesurfer tkRAS');
+postop.addtransform(v2fs(:,1:3),'freesurfer vox');
+postop.addtransform(v2fsras(:,1:3),'freesurfer tkRAS');
+
+    
