@@ -749,20 +749,48 @@ classdef volumeview < handle
      end
      
      %%%%%%%
-     function addpoint(me,label,pt,varargin)
+     function addpoint(me,label,varargin)
           
+         transform = eye(4);
+         plotargs = {};
+         if isa(label,'points')            
+             pt = label;
+             label = pt.label;
+         elseif nargin < 3 || isempty(pt)
+             pt = me.current_point;
+         else
+             pt = varargin{1};
+             varargin(1) = [];
+         end
+         
+         i = 1;
+         while i <= length(varargin)
+             switch varargin{i}
+                 case 'transform'
+                     if isnumeric(varargin{i+1})
+                         transform = varargin{i+1};
+                         transform(4,1:4) = [0 0 0 1];
+                     else
+                         transform = varargin{i+1}.trmat;
+                     end
+                     i = i+1;
+                 case 'plotargs'
+                     plotargs = varargin{i+1};
+                     i = i+1;
+                     
+                 otherwise 
+                     error('Unrecognized option %s',varargin{i})
+             end
+             i=i+1;
+         end
+         
          npt = length(me.points);
          if nargin <2 || isempty(label)
             label = sprintf('Point %i',npt+1);
             label = inputdlg('Enter Label','Label point',1,{label});           
             label = label{1};
          end      
-         if isa(label,'points')
-             pt = label;
-             label = pt.label;
-         elseif nargin < 3 || isempty(pt)
-             pt = me.current_point;
-         end
+         
          
          if ~isa(pt,'points')
              if size(pt,1)>1
@@ -773,7 +801,7 @@ classdef volumeview < handle
              end
              for k = 1:size(pt,1)
                  me.points(npt+k).label = sprintf(label,k);
-                 me.points(npt+k).coord= pt(k,:);
+                 me.points(npt+k).coord= [pt(k,:) 1]*transform(:,1:3);
                  me.points(npt+k).file= '';
                   me.points(npt+k).show = true;
         %           me.objectiter=me.objectiter+1;
@@ -784,16 +812,17 @@ classdef volumeview < handle
               newpt = me.points(npt+1:end);
          else
             
-             getprops = setdiff(properties(pt),{'objectid'});
+             getprops = setdiff(properties(pt),{'objectid','coord'});
              for i = 1:length(pt)
                  me.points(npt+i).objectid = me.objectiter;
+                  me.points(npt+i).coord = [pt(i).coord 1]*transform(:,1:3);
                  for k = 1:length(getprops)
                     me.points(npt+i).(getprops{k}) = pt(i).(getprops{k});
                     
                  end
-                 if nargin < 2
-                     me.points(npt+i).label = ['Copy of ',me.points(npt+i).label ];
-                 end
+%                  if nargin < 2
+%                      me.points(npt+i).label = ['Copy of ',me.points(npt+i).label ];
+%                  end
              end
              newpt =  me.points(npt+1:end);
             
@@ -801,7 +830,7 @@ classdef volumeview < handle
          me.current_object = me.points(npt+1);
          for i = 1:length(newpt)
             for k = 1:length(me.plotax)            
-                plh = plot(me.plotax(k).h,0,0,'.',varargin{:});
+                plh = plot(me.plotax(k).h,0,0,'.',plotargs{:});
                 newpt(i).ploth(k) =plh;
                 set(plh,'ButtonDownFcn',@(a,b)me.meshButtonDown(a,b))
             end
