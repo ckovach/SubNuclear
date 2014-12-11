@@ -175,23 +175,35 @@ save(fullfile(ddir,sprintf('%s_volview',sid)),'preop','postop'),
 
 %% Conversion to Freesurfer tkRAS
 %
-% This assumes that freesurfer bin files are in the OS path
+% This checks whether freesurfer bin files are in the OS path, then adds
+% transforms to freesurfer space to the volumeview if they are.
 %
 
-freesurfer_path = 'FS';  % Path to freesurfer subject folder  
+freesurfer_path = fullfile(pwd,'FS');  % Path to freesurfer subject folder  
 
+%%% Uncomment for defailt FS data path
+%[res,out] = system('echo $FREESURFER_HOME');
+%freesurfer_path = fullfile(deblank(out),'data');
 
-res = system( sprintf('mri_convert %s%smri%sorig.mgz %s%sFST1.nii',freesurfer_directory,filesep,filesep,ddir,filesep));
-fs = volumeview('FST1','FST1.nii',ddir);
-freesurfer_directory = fullfile(freesurfer_path,sprintf('pt%s',sid));
-[res,out] = system( sprintf('mri_info --vox2ras-tkr %s%smri%sorig.mgz',freesurfer_directory,filesep,filesep));
- v2rtk = str2num(out)';
-v2fs = preop.transforms(1).trmat*fs(1).transforms(1).trmat^-1;
-v2fsras = v2fs*v2rtk;
+freesurfer_files = fullfile(freesurfer_path,sprintf('pt%s',sid));
 
-preop.addtransform(v2fs(:,1:3),'freesurfer vox');
-preop.addtransform(v2fsras(:,1:3),'freesurfer tkRAS');
-postop.addtransform(v2fs(:,1:3),'freesurfer vox');
-postop.addtransform(v2fsras(:,1:3),'freesurfer tkRAS');
+[res,out] = system( sprintf('mri_convert %s%smri%sorig.mgz %s%sFST1.nii',freesurfer_files,filesep,filesep,ddir,filesep));
+if res~=0
+    warning(['Error encountered while attempting to import the subject %s''s volume from freesurfer:\n\n\t%s\n\nIf you want to interface with freesurfer ',...
+              'make sure the appropriate binaries\nare functioning and in the current system OS path, and that required data',...
+              '\nare located at\n\t%s\n\n...otherwise,ignore this warning.\n\n'],sid,out,freesurfer_directory);
+else
+    fs = volumeview('FST1','FST1.nii',ddir);
+    [res,out] = system( sprintf('mri_info --vox2ras-tkr %s%smri%sorig.mgz',freesurfer_files,filesep,filesep));
+     v2rtk = str2num(out)';
+    v2fs = preop.transforms(1).trmat*fs(1).transforms(1).trmat^-1;
+    v2fsras = v2fs*v2rtk;
 
-    
+    preop.addtransform(v2fs(:,1:3),'freesurfer vox');
+    preop.addtransform(v2fsras(:,1:3),'freesurfer tkRAS');
+    postop.addtransform(v2fs(:,1:3),'freesurfer vox');
+    postop.addtransform(v2fsras(:,1:3),'freesurfer tkRAS');
+
+end
+
+%% Import freesurfer meshes
