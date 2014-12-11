@@ -753,7 +753,7 @@ classdef volumeview < handle
           
          transform = eye(4);
          plotargs = {};
-         if isa(label,'points')            
+         if nargin >1 && isa(label,'points')            
              pt = label;
              label = pt.label;
          elseif nargin < 3 || isempty(pt)
