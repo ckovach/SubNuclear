@@ -54,7 +54,7 @@
 
 
          if ~isempty(me.points)                
-             tol = 3; % how many pixels a point can be off the plain and still rendered
+             tol = 4; % how many pixels a point can be off the plain and still rendered
             for i = 1:length(me.points)
 %             for i = find([me.points.show])
 %                 try
