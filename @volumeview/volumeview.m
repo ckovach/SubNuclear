@@ -751,7 +751,7 @@ classdef volumeview < handle
      %%%%%%%
      function addpoint(me,label,varargin)
           
-         transform = eye(4);
+         trfun = @(x)x;
          plotargs = {};
          if nargin >1 && isa(label,'points')            
              pt = label;
@@ -770,8 +770,11 @@ classdef volumeview < handle
                      if isnumeric(varargin{i+1})
                          transform = varargin{i+1};
                          transform(4,1:4) = [0 0 0 1];
-                     else
-                         transform = varargin{i+1}.trmat;
+                         trfun = @(x)[x 1]*transform;
+                     elseif isa(varargin{i+1},'function_handle');
+                         trfun = varargin{i+1};
+                     elseif isa(varargin{i+1},'transforms')
+                         trfun = varargin{i+1}.tr;
                      end
                      i = i+1;
                  case 'plotargs'
@@ -801,7 +804,7 @@ classdef volumeview < handle
              end
              for k = 1:size(pt,1)
                  me.points(npt+k).label = sprintf(label,k);
-                 me.points(npt+k).coord= [pt(k,:) 1]*transform(:,1:3);
+                 me.points(npt+k).coord= trfun(pt(k,:));
                  me.points(npt+k).file= '';
                   me.points(npt+k).show = true;
         %           me.objectiter=me.objectiter+1;
@@ -815,7 +818,7 @@ classdef volumeview < handle
              getprops = setdiff(properties(pt),{'objectid','coord'});
              for i = 1:length(pt)
                  me.points(npt+i).objectid = me.objectiter;
-                  me.points(npt+i).coord = [pt(i).coord 1]*transform(:,1:3);
+                  me.points(npt+i).coord = trfun(pt(i).coord);
                  for k = 1:length(getprops)
                     me.points(npt+i).(getprops{k}) = pt(i).(getprops{k});
                     
