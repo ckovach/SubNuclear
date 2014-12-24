@@ -645,6 +645,7 @@ classdef volumeview < handle
              label = '';
          else
              label = varargin{1};
+             varargin(1) = [];
          end
 %          if isempty(vol)
 %               vol = medimage(varargin{:});
