@@ -645,7 +645,7 @@ classdef volumeview < handle
              label = '';
          else
              label = varargin{1};
-             varargin(1) = [];
+       %      varargin(1) = [];
          end
 %          if isempty(vol)
 %               vol = medimage(varargin{:});
@@ -757,7 +757,7 @@ classdef volumeview < handle
          if nargin >1 && isa(label,'points')            
              pt = label;
              label = pt.label;
-         elseif nargin < 3 || isempty(pt)
+         elseif nargin < 3 || isempty(varargin{1})
              pt = me.current_point;
          else
              pt = varargin{1};
