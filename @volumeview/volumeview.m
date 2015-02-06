@@ -655,40 +655,56 @@ classdef volumeview < handle
 %          end
 %          vol.reorient2std;
          nvol = length(me.volumes);
-         voli = nvol+1;
+        % voli = nvol+1;
          
-         if nargin <2 || isempty(label)
-            label = sprintf('Volume %i',voli);
+         sz4 = size(vol.Data,4);
+         if sz4 >1
+             lblstr = '%s %i';
+             for k = 1:sz4;
+                 vv(k) = medimage(vol);
+                 vv(k).Data = vol.Data(:,:,:,k);
+             end
+             vol = vv;
+         else
+             lblstr = '%s';
+         end
+        if nargin <2 || isempty(label)
+            label = 'Volume';
             label = inputdlg('Enter Label','Label volume',1,{label});           
             label = label{1};
-         end       
+        end     
 %          vol.reorient2std;
-         me.volumes(voli).label = label;
-         me.volumes(voli).image= vol;
-         me.volumes(voli).file= '';
-          me.volumes(voli).show = true;
-%           me.objectiter=me.objectiter+1;
-          me.volumes(voli).objectid = me.objectiter;
-          me.volumes(voli).notes = '';
-        me.volumes(voli).intensity_range = minmax(vol.Data(:));
-        me.volumes(voli).parent = me;
-        
-        me.current_object =  me.volumes(voli);
-%         me.current.volumes =  me.volumes(voli);
-      
-        for k = 1:length(me.plotax)
+         for k = 1:sz4
+              voli = nvol+k;
+            
+            me.volumes(voli).label = sprintf(lblstr,label,k);
+         
+             me.volumes(voli).image= vol(k);
+             me.volumes(voli).file= '';
+              me.volumes(voli).show = true;
+    %           me.objectiter=me.objectiter+1;
+              me.volumes(voli).objectid = me.objectiter;
+              me.volumes(voli).notes = '';
+            me.volumes(voli).intensity_range = minmax(vol(k).Data(:));
+            me.volumes(voli).parent = me;
 
-                        me.plotax(k).ploth(voli) = image(nan,'parent',me.plotax(k).h); %#ok<CPROP>
+            me.current_object =  me.volumes(nvol+1);
+    %         me.current.volumes =  me.volumes(voli);
 
-                set( me.plotax(k).ploth(voli),'ButtonDownFcn',@(a,b)me.plotax(k).axisupdate(a,b))
-                me.plotax(k).reset;
-       end
-%         me.imhandles(voli,:) =  me.volumes(voli).ploth;
-     
-        tr = [me.volumes(voli).image.vox2mm; 0 0 0 1];
-        if ~isempty(tr)
-            me.addtransform(tr',sprintf('vol%i mm',voli));
-        end
+            for k = 1:length(me.plotax)
+
+                            me.plotax(k).ploth(voli) = image(nan,'parent',me.plotax(k).h); %#ok<CPROP>
+
+                    set( me.plotax(k).ploth(voli),'ButtonDownFcn',@(a,b)me.plotax(k).axisupdate(a,b))
+                    me.plotax(k).reset;
+           end
+    %         me.imhandles(voli,:) =  me.volumes(voli).ploth;
+
+            tr = [me.volumes(voli).image.vox2mm; 0 0 0 1];
+            if ~isempty(tr)
+                me.addtransform(tr',sprintf('vol%i mm',voli));
+            end
+         end
           me.updatelists();
           tr = me.volumes(voli).tr2std;
           tr.label = sprintf('vol%i std',voli);
