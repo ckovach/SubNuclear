@@ -38,6 +38,6 @@ u = D./repmat(dv(D),1,3);
 fvec = u.*repmat(d.*exp(-(d).^2),1,3);
 
 delta = repmat(sum(fvec.*vn,2),1,3).*u;
-
+delta(isnan(delta)) = 0;
 crm.trirep = TriRep(Tr.Triangulation,double(Tr.X + mag*delta));
 me.plotupdate();
