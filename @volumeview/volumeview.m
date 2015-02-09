@@ -419,7 +419,11 @@ classdef volumeview < handle
      end
      %%%
      function set.current_point(me,a)
+        sz = size(me.Vol);
+        a(a>sz) = sz(a>sz)-1;
+        a(a<0) = 0;
         me.currp = a;
+        
         for i= find(isopen(me.plotax))
 %             ctrl = me.plotax(i).handles.control;
              me.plotax(i).setvolmat(a);

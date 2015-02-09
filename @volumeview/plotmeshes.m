@@ -10,13 +10,15 @@
 % $Author$
 % ------------------------------------------------
 
+    mshow = [me.meshes.show];
+    pshow = [me.points.show];
      for k = 1:length(me.plotax)
 
 
 
           nv = me.plotax(k).normvec;
          for i = 1:length(me.meshes)
-             vis = 'on';
+%              show = true;
                
              if length(me.meshes(i).ploth)<k || ~ishandle(me.meshes(i).ploth(k))
                        plh = plot(me.plotax(k).h,0,0,'.',varargin{:});
@@ -24,18 +26,15 @@
                     set(plh,'ButtonDownFcn',@(a,b)me.meshButtonDown(a,b));
              end
              
-             if ~me.meshes(i).show                     
-                 slax = [0 0];
-%                  set(me.meshes(i).ploth,'visible','off');
-                  vis = 'off';
-             else
+             if mshow(i)                     
+
                  sl = slicetri(me.meshes(i).trirep,me.current_point,nv);
 
                  slax = me.plotax(k).vol2ax(sl);
-                 if isempty(slax)
-                     vis = 'off';
-                 end
-             end
+%                  if isempty(slax)
+%                      show = false;
+%                  end
+             
              if isempty(me.meshes(i).plotcolor)
                  me.meshes(i).plotcolor = cols(mod(i-1,length(cols))+1,:);
              end
@@ -44,12 +43,15 @@
              end
 
 
-             dslax = zscore(sum(diff(slax).^2,2));
+%              dslax = zscore(sum(diff(slax).^2,2));
+             dslax = sum(diff(slax).^2,2);
 
-             slax(dslax>10,:) = nan; %Large jumps are probably related to misordering
+             slax(dslax>16,:) = nan; %Large jumps are probably related to misordering or discontinuities
           
              
-             set(me.meshes(i).ploth(k),'xdata',slax(:,1),'ydata',slax(:,2),'zdata',ones(size(slax(:,1)))*.5,'color',me.meshes(i).plotcolor,'linestyle',me.meshes(i).linestyle,'visible',vis,me.meshes(i).plotargs{:}) 
+             set(me.meshes(i).ploth(k),'xdata',slax(:,1),'ydata',slax(:,2),'zdata',ones(size(slax(:,1)))*.5,'color',me.meshes(i).plotcolor,'linestyle',me.meshes(i).linestyle,me.meshes(i).plotargs{:}) 
+%              me.meshes(i).show = show;
+            end
          end
 
 
@@ -64,7 +66,7 @@
                     set(plh,'ButtonDownFcn',@(a,b)me.meshButtonDown(a,b))
                 end
 
-               if me.points(i).show
+               if pshow(i)
                     pp = me.points(i).coord;
                     dp = pp-repmat(me.current_point,size(pp,1),1);
                     plp = abs(dp*nv') < tol;
@@ -81,7 +83,8 @@
                          if isempty(me.points(i).linestyle)
                              if size(me.points(i).coord,1) == 1
 
-                                    me.points(i).linestyle = '+';
+                                    me.points(i).linestyle = '';
+                                    me.points(i).marker = '+';
                              else
                                     me.points(i).linestyle = '-';
 
@@ -91,21 +94,25 @@
                         plx = me.plotax(k).vol2ax(pp);
                         plx = plx + 0./repmat(plp,1,2);
                         try
-                            set(me.points(i).ploth(k),'xdata',plx(:,1),'ydata',plx(:,2),'visible','on','color',cols(mod(i-1,length(cols))+1,:),'zdata',.5,'markersize',14,...
-                               'color',me.points(i).plotcolor,'linestyle',me.points(i).linestyle,me.points(i).plotargs{:})
+                            set(me.points(i).ploth(k),'xdata',plx(:,1),'ydata',plx(:,2),'color',cols(mod(i-1,length(cols))+1,:),'zdata',.5,'markersize',14,...
+                               'color',me.points(i).plotcolor,'marker',me.points(i).marker,'linestyle',me.points(i).linestyle,me.points(i).plotargs{:},'visible','on')
+%                                 me.points(i).show = true;
                         catch err
+                            set(me.points(i).ploth(k),'visible','off')
                             warning(err.message)
                         end
                     else
                          try
                             set(me.points(i).ploth(k),'visible','off')
                          end
-                    end
+%                          me.points(i).show = false;
+                     end
                 else
-                         try
-                            set(me.points(i).ploth(k),'visible','off')
-                         end
-                end
+%                          me.points(i).show = false;
+                          try
+                             set(me.points(i).ploth(k),'visible','off')
+                          end
+                 end
             end
         end
      end
