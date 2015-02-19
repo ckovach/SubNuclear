@@ -386,6 +386,9 @@ classdef volumeview < handle
              if isnumeric(plc)
                  plc = strcat('[',num2str(plc),']');
              end
+             if any(~ishandle(me.plprop))
+                warndlg('If a volumeview object has been loaded from disk, it needs to be reinitialized with vvobj = reload(vvobj);') 
+             end
             set(me.plprop(1),'string',plc);
             set(me.plprop(2),'string',obj(1).linestyle);
             plarg = obj(1).plotargs;
@@ -1025,7 +1028,11 @@ classdef volumeview < handle
         end
         me.meshedit(val);
     end
-    
+   %%%
+   function newme = reload(me)
+      newme = volumeview(me);
+      delete(me);
+   end
     
  end
     methods (Hidden = true)
