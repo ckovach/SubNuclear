@@ -38,7 +38,7 @@
              if isempty(me.meshes(i).plotcolor)
                  me.meshes(i).plotcolor = cols(mod(i-1,length(cols))+1,:);
              end
-             if isempty(me.meshes(i).linestyle)
+             if isempty(me.meshes(i).linestyle)  || ~all(ismember( me.meshes(i).linestyle,'-:.'))
                  me.meshes(i).linestyle = '-';
              end
 
@@ -95,7 +95,7 @@
                         plx = plx + 0./repmat(plp,1,2);
                         try
                             set(me.points(i).ploth(k),'xdata',plx(:,1),'ydata',plx(:,2),'color',cols(mod(i-1,length(cols))+1,:),'zdata',.5,'markersize',14,...
-                               'color',me.points(i).plotcolor,'marker',me.points(i).marker,'linestyle',me.points(i).linestyle,me.points(i).plotargs{:},'visible','on')
+                               'color',me.points(i).plotcolor,'marker',me.points(i).mrkstyle,'linestyle',me.points(i).lnstyle,me.points(i).plotargs{:},'visible','on')
 %                                 me.points(i).show = true;
                         catch err
                             set(me.points(i).ploth(k),'visible','off')
