@@ -87,7 +87,7 @@ classdef medimage <handle
         %%%%%%%%
         function asgnData(me,a)
             
-            if nargin > 1 && isnumeric(a)
+            if nargin > 1 && (isnumeric(a) || islogical(a))
                 me.imgDat = a;
             else
                 if nargin < 2 || isempty(a) || exist(a,'dir')
@@ -219,8 +219,17 @@ classdef medimage <handle
             
         end
         %%%%%
-        function save(me)
-            [fn,pth]= uiputfile({'*.nii;*.nii.gz'},'Save file as',fullfile(me.path,me.file));
+        function save(me,uigui)
+            if nargin <2
+                uigui = true;
+            end
+            if uigui  
+                [fn,pth]= uiputfile({'*.nii;*.nii.gz'},'Save file as',fullfile(me.path,me.file));
+            else
+               fn = me.file;
+               pth = me.path;
+            end
+            
             T = me.vox2mm';
             h = me.header;
             h.srow_x = T(:,1);
