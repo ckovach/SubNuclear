@@ -20,9 +20,9 @@ classdef plotobj < imobj
         show;
     end
     
-    properties (Access = private)
+    properties (Hidden = true)
         lnstyle = 'none';
-        mrkstyle = 'none';
+        mrkstyle = '+';
         visible = false;
     end
     
@@ -30,7 +30,7 @@ classdef plotobj < imobj
         
         function set.linestyle(me,a)
             
-            ism = ismember(a,'-:.');
+            ism = ismember(a,'-:');
             lnst = a(ism);
             mrkst = a(~ism);
             
@@ -45,7 +45,8 @@ classdef plotobj < imobj
         end
         
         function a = get.linestyle(me)
-            a = me.lnstyle;
+            a = regexprep({me.lnstyle,me.mrkstyle},'none','');
+            a = [a{:}];
         end
         
         function set.marker(me,a)
