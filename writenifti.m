@@ -14,7 +14,9 @@ function writenifti(hdat,IM,fname)
 
 %C. Kovach 2010
 
-fid = fopen(fname,'w','l');
+fnnogz = regexprep(fname,'.gz',''); 
+
+fid = fopen(fnnogz,'w','l');
 
 % hdat.endian = 'little';
  fwrite(fid,hdat.sizeof_hdr,'int32');
@@ -115,7 +117,8 @@ fclose(fid);
 
 switch lower(ext)
     case {'.gz'}  %%% Zip file if it ends with gz
-        gzip(fname)
+        gzip(fnnogz)
+        delete(fnnogz);
 end
 
 
