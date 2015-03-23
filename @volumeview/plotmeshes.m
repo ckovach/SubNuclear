@@ -80,12 +80,13 @@
                          if isempty(me.points(i).plotcolor)
                              me.points(i).plotcolor = cols(mod(i-1,length(cols))+1,:);
                          end
-                         if isempty(me.points(i).linestyle)
+                         if isempty(me.points(i).linestyle) && isempty(me.points(i).linestyle) ||  strcmp(me.points(i).linestyle,'none') && strcmp(me.points(i).linestyle,'none')
                              if size(me.points(i).coord,1) == 1
 
-                                    me.points(i).linestyle = '';
+                                    me.points(i).linestyle = 'none';
                                     me.points(i).marker = '+';
                              else
+                                    me.points(i).marker = 'none';
                                     me.points(i).linestyle = '-';
 
                              end
