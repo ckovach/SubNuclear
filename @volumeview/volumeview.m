@@ -1020,10 +1020,10 @@ classdef volumeview < handle
         
         switch src
             case me.suckh
-                val  = 1;
+                val  = -1;
 
             case me.blowh
-                val = -1;
+                val = 1;
 
         end
         me.meshedit(val);
