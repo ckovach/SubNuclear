@@ -65,7 +65,10 @@ structs = {'L Amyg' , fullfile(ddir,'first_results/T1_first-L_Amyg_first.vtk')
            'R Hipp' , fullfile(ddir,'first_results/T1_first-R_Hipp_first.vtk')};
 %%% The vtk file contain coordinates for the brain after it has been
 %%% reoriented into RAS space and put into a smaller FOV.
-preop2fsl = preop.volumes.tr2std*trfov;
+%%% This still needs to be verified with non-standard orientations.
+preop2fsl = preop.volumes.tr2std...    
+    *trfov...
+    *transforms('trmat',diag([max(abs(preop.transforms(1).trmat(1:3,1:3))) 1]));
        
 for i = 1:length(structs)
 %     postop.addmesh(structs{i,2},structs{i,1})
