@@ -32,11 +32,12 @@ mnih = readnifti('MNI152_T1_1mm.nii',true);
 T = textread(fullfile(ddir,'T1_to_MNI_lin.mat'))'; %#ok<REMFF1> 
 Tfov = textread(fullfile(ddir,'T1_roi2nonroi.mat'))'; %Transformation into smaller field of view
 T(1:3,1:3) = diag(max(abs(preop.transforms(1).trmat(1:3,1:3))))*T(1:3,1:3); % FLIRT uses voxel x size coordinates
- tr2std = preop.volumes(1).tr2std; % FLIRT also computes transform from standard space;
+Tfov(4,1:3) =Tfov(4,1:3)* diag(max(abs(preop.transforms(1).trmat(1:3,1:3))).^-1);
+tr2std = preop.volumes(1).tr2std; % FLIRT also computes transform from standard space;
 % tr1 = transforms('trmat',Tfov(1:4,:)^-1,'label','tr2fov')*tr2std*transforms('trmat',T(1:4,:),'label','T12MNI');
 trfov = transforms('trmat',Tfov(1:4,:)^-1,'label','tr2fov'); %Transform to field of view
 % tr1 = trfov*transforms('trmat',T(1:4,:),'label','T12MNI');
-tr1 = tr2std*trfov*transforms('trmat',T(1:4,:),'label','T12MNI');
+tr1 = tr2std*trfov*transforms('trmat',T(1:4,1:3),'label','T12MNI');
 tr2 = transforms('trmat',double(mnih.vox2unit)','label','MNI2mm');
 tr = tr1*tr2;
 tr.label = 'vox2MNImm';
@@ -46,7 +47,7 @@ preop.addtransform(tr);
 
 
 
-save(fullfile(ddir,sprintf('%s_volview',sid)),'preop','postop'),
+%save(fullfile(ddir,sprintf('%s_volview',sid)),'preop','postop'),
 
 
 
@@ -90,7 +91,8 @@ save(fullfile(ddir,sprintf('%s_volview',sid)),'preop','postop'),
 %% Next apply TPS warping
 
 
-helpdlg('Select control points on each image. Make sure they are in the same order')
+hd = helpdlg('Select control points on each image. Make sure they are in the same order');
+uiwait(hd)
 x1 = cat(1,preop.current.points.coord); x1(:,4) = 1;
 x2 = cat(1,postop.current.points.coord); x2(:,4) = 1;
 
