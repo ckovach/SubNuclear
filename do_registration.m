@@ -28,24 +28,54 @@ preop.sisters= postop;
 helpdlg('Make sure that preop and postop images are correctly aligned. If they aren''t than realign with FLIRT.')
 
 %% Compute the voxel to MNI coordinate transformation
-mnih = readnifti('MNI152_T1_1mm.nii',true);
-T = textread(fullfile(ddir,'T1_to_MNI_lin.mat'))'; %#ok<REMFF1> 
-Tfov = textread(fullfile(ddir,'T1_roi2nonroi.mat'))'; %Transformation into smaller field of view
-T(1:3,1:3) = diag(max(abs(preop.transforms(1).trmat(1:3,1:3))))*T(1:3,1:3); % FLIRT uses voxel x size coordinates
-Tfov(4,1:3) =Tfov(4,1:3)* diag(max(abs(preop.transforms(1).trmat(1:3,1:3))).^-1);
+
+%%% The parameters in the fsl mat transform files are idiosyncratic so best
+%%% to compute the transform with fsl's img2imgcoord utility.
+
 tr2std = preop.volumes(1).tr2std; % FLIRT also computes transform from standard space;
-% tr1 = transforms('trmat',Tfov(1:4,:)^-1,'label','tr2fov')*tr2std*transforms('trmat',T(1:4,:),'label','T12MNI');
-trfov = transforms('trmat',Tfov(1:4,:)^-1,'label','tr2fov'); %Transform to field of view
-% tr1 = trfov*transforms('trmat',T(1:4,:),'label','T12MNI');
-tr1 = tr2std*trfov*transforms('trmat',T(1:4,1:3),'label','T12MNI');
-tr2 = transforms('trmat',double(mnih.vox2unit)','label','MNI2mm');
-tr = tr1*tr2;
+
+com = 'printf ''0 0 0\n1 0 0\n0 1 0\n 0 0 1'' | img2imgcoord -vox -src %s -dest %s -xfm %s';
+A = [0 0 0 1; 1 0 0 1; 0 1 0 1; 0 0 1 1]; 
+[res,out] = system(sprintf(com,fullfile(ddir,'T1.nii.gz'),...
+                         fullfile(ddir,'T1_fullfov.nii.gz'),...
+                         fullfile(ddir,'T1_roi2nonroi.mat')));
+out = regexprep(out,'.*:','');
+xfov = str2num(out);
+xfov(:,end+1) = 1;
+Tfov = xfov\A; %%% T1_fullfov to T1 transform
+
+[res,out] = system(sprintf(com,fullfile(ddir,'T1.nii.gz'),...
+                         fullfile('.','MNI152_T1_1mm.nii'),...
+                         fullfile(ddir,'T1_to_MNI_lin.mat')));
+out = regexprep(out,'.*:','');
+xmni = str2num(out);
+xmni(:,end+1) = 1;
+mnih = readnifti('MNI152_T1_1mm.nii',true);
+Tmni =Tfov*(A\xmni)*mnih.vox2unit';
+tr = transforms('trmat',Tmni,'label','vox2MNImm');
+% mnih = readnifti('MNI152_T1_1mm.nii',true);
+% T = textread(fullfile(ddir,'T1_to_MNI_lin.mat'))'; %#ok<REMFF1> 
+% Tfov = textread(fullfile(ddir,'T1_roi2nonroi.mat'))'; %Transformation into smaller field of view
+% T(1:3,1:3) = diag(max(abs(preop.transforms(1).trmat(1:3,1:3))))*T(1:3,1:3); % FLIRT uses voxel x size coordinates
+% Tfov(4,1:3) =Tfov(4,1:3)* diag(max(abs(preop.transforms(1).trmat(1:3,1:3))).^-1);
+% tr2std = preop.volumes(1).tr2std; % FLIRT also computes transform from standard space;
+% % tr1 = transforms('trmat',Tfov(1:4,:)^-1,'label','tr2fov')*tr2std*transforms('trmat',T(1:4,:),'label','T12MNI');
+ trfov = transforms('trmat',Tfov(1:4,:)^-1,'label','tr2fov'); %Transform to field of view
+% % tr1 = trfov*transforms('trmat',T(1:4,:),'label','T12MNI');
+% tr1 = tr2std*trfov*transforms('trmat',T(1:4,1:3),'label','T12MNI');
+% tr2 = transforms('trmat',double(mnih.vox2unit)','label','MNI2mm');
+% tr = tr1*tr2;
 tr.label = 'vox2MNImm';
 postop.addtransform(tr);
 preop.addtransform(tr);
 
-
-
+[res,out] = system(sprintf(com,fullfile(ddir,'postop_orig'),...
+                         fullfile(ddir,'T1_fullfov'),...
+                         fullfile(ddir,'post_to_pre.mat')));
+out = regexprep(out,'.*:','');
+xp2p= str2num(out);
+xp2p(:,end+1) = 1;
+Tpo2pr  = A\xp2p;
 
 %save(fullfile(ddir,sprintf('%s_volview',sid)),'preop','postop'),
 
@@ -117,8 +147,11 @@ mtpsR = TriRep(preop.meshes(end).trirep.Triangulation,mwarp(XR(:,1:3)));
 figure(postop.fig)
 helpdlg('Now add the contact locations')
 %% Project contacts to preop brain
-for i =length(preop.points)+1:length(postop.points);
-    pt= postop.points(i);
+figure(postop.fig)
+hd = helpdlg('Select contact points in the postop brain, and press OK');
+uiwait(hd)
+for i =1:length(postop.current.points);
+    pt= postop.current.points(i);
     
     preop.addpoint(pt.label,imwarp(pt.coord));
 end
