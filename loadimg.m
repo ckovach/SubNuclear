@@ -16,14 +16,15 @@ datafmts = {'ubit1','uchar','int16','int32','single','double','double[2]','doubl
 
 fid = fopen([fnoext,'.img']);
 
-if hdat.datatype == 0
+dtindx = log(double(hdat.datatype))./log(2)+1;
+if hdat.datatype == 0 || dtindx>length(datafmts)
    warning('Unknown data type')
    lbl = strcat(cellfun(@num2str,num2cell(1:length(datafmts)),'uniformoutput',false),{'. '},datafmts);
    inp = input(['\nAssume which type?',sprintf('\n%s',lbl{:}),'\n']);
    format = datafmts{inp};
 else
     
-    format = datafmts{log(double(hdat.datatype))./log(2)+1};
+    format = datafmts{dtindx};
 end
 
 img = fread(fid,format);
