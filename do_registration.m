@@ -60,7 +60,7 @@ tr = transforms('trmat',Tmni,'label','vox2MNImm');
 % Tfov(4,1:3) =Tfov(4,1:3)* diag(max(abs(preop.transforms(1).trmat(1:3,1:3))).^-1);
 % tr2std = preop.volumes(1).tr2std; % FLIRT also computes transform from standard space;
 % % tr1 = transforms('trmat',Tfov(1:4,:)^-1,'label','tr2fov')*tr2std*transforms('trmat',T(1:4,:),'label','T12MNI');
- trfov = transforms('trmat',Tfov(1:4,:)^-1,'label','tr2fov'); %Transform to field of view
+% trfov = transforms('trmat',Tfov(1:4,:)^-1,'label','tr2fov'); %Transform to field of view
 % % tr1 = trfov*transforms('trmat',T(1:4,:),'label','T12MNI');
 % tr1 = tr2std*trfov*transforms('trmat',T(1:4,1:3),'label','T12MNI');
 % tr2 = transforms('trmat',double(mnih.vox2unit)','label','MNI2mm');
@@ -96,9 +96,9 @@ structs = {'L Amyg' , fullfile(ddir,'first_results/T1_first-L_Amyg_first.vtk')
 %%% The vtk file contain coordinates for the brain after it has been
 %%% reoriented into RAS space and put into a smaller FOV.
 %%% This still needs to be verified with non-standard orientations.
-preop2fsl = preop.volumes.tr2std...    
-    *trfov...
-    *transforms('trmat',diag([max(abs(preop.transforms(1).trmat(1:3,1:3))) 1]));
+trfov = transforms('trmat',Tfov(1:4,:),'label','tr2fov'); %Transform to field of view
+preop2fsl = preop.volumes.tr2std...    %    *trfov...
+    *transforms('trmat',Tfov(1:4,:)*diag([max(abs(preop.transforms(1).trmat(1:3,1:3))) 1]));
        
 for i = 1:length(structs)
 %     postop.addmesh(structs{i,2},structs{i,1})

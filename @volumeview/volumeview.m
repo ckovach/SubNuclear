@@ -648,10 +648,10 @@ classdef volumeview < handle
 %          elseif nargin >= 3
 %              vol = varargin{1};
 %          end
-         if nargin < 2 || ~ischar(varargin{1})
+         if nargin < 3 || ~ischar(varargin{2})
              label = '';
          else
-             label = varargin{1};
+             label = varargin{2};
        %      varargin(1) = [];
          end
 %          if isempty(vol)
