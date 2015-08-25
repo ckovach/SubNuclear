@@ -257,12 +257,13 @@ classdef plotax < handle
             
             switch src
                 case ax.handles.transpose % transpose
-                   ax.transpose = get(src,'value'); 
-                   ax.basetrmat = ax.basetrmat*[0 1 0 0;1 0 0 0; 0 0 1 0; 0 0 0 1];
+                    ax.transpose = get(src,'value'); 
+                    vc = ax.vol2ax(size(ax.parent.Vol)/2-.5);
+                    ax.basetrmat = ax.basetrmat*[eye(3,4);[-vc,0,1]]*[0  1 0 0; 1 0 0 0; 0 0 1 0; 0 0 0 1]*[eye(3,4);[+vc,0,1]];
                 case ax.handles.rotate % Rotate 90 degrees
                     ax.rot=mod(ax.rot+1,4);
                     vc = ax.vol2ax(size(ax.parent.Vol)/2-.5);
-                    ax.basetrmat=ax.basetrmat*[eye(3,4);[-vc,0,1]]*[0 -1 0 0; 1 0 0 0; 0 0 1 0; 0 0 0 1]*[eye(3,4);[+vc,0,1]];
+                    ax.basetrmat = ax.basetrmat*[eye(3,4);[-vc,0,1]]*[0 -1 0 0; 1 0 0 0; 0 0 1 0; 0 0 0 1]*[eye(3,4);[+vc,0,1]];
             end
               ax.setvolmat;
               ax.parent.resetaxis(ax);
