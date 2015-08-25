@@ -9,6 +9,7 @@
 %%% matrix plot functions: avoid the annoyance of giving each column as a
 %%% separate argument.
 mplot3 = @(x,varargin)plot3(x(:,1),x(:,2),x(:,3),varargin{:});
+mscatter3 = @(x,varargin)scatter3(x(:,1),x(:,2),x(:,3),varargin{:});
 m2plot3 = @(x,y,varargin)  plot3(cat(2,x(:,1),y(:,1))',cat(2,x(:,2),y(:,2))',cat(2,x(:,3),y(:,3))',varargin{:});
 mplot = @(x,varargin)plot(x(:,1),x(:,2),varargin{:});
 mquiver = @(X,V,varargin) quiver3(X(:,1),X(:,2),X(:,3),V(:,1),V(:,2),V(:,3),varargin{:});
