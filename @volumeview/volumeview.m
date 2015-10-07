@@ -170,11 +170,10 @@ classdef volumeview < handle
              me.currtypes.(objects{k})= [];
 
          end        
-        me.fig = figure('NumberTitle','off');        
+        me.fig = figure('NumberTitle','off','toolbar','figure');        
 %          set(me.fig,'WindowButtonMotionFcn',@(a,b)me.wmvfn(a,b),...
 %            'WindowButtonUpFcn',@(a,b)me.figButtonUp(a,b),'ButtonDownFcn',@(a,b)me.figButtonDownFcn)
-        me.addfig(me.fig);
-      
+          me.addfig(me.fig);
           if nargin > 0 && isa(varargin{1},'volumeview')
               vw = varargin{1};
               props= setdiff(properties(vw),{'fig','plotax','sisobj','sisters'});
