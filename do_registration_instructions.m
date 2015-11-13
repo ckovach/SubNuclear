@@ -38,7 +38,8 @@
 %
 % *2. Loading and saving*
 %
-% 	Volumeview classes can be saved to and loaded from matlab files, however to get the GUI going you need to pass the loaded object as an argument to volumeview:
+% 	Volumeview classes can be saved to and loaded from matlab files, however to get the GUI going 
+% you need to pass the loaded object as an argument to volumeview:
 %
 %       load saved_data  vol
 %       vol = volumeview(vol)
@@ -79,36 +80,53 @@ sid= sid{1};
 ddir = sprintf('%sfsl.anat',sid);
 %% Subcortical parcellation
 % 
-% For parcellation, SubNuclear uses FSL's module, FIRST, to acquire a gross parcellation of major subcortical structures. These are then coregistered with atlas-derived objects which contain finer-scale structures.  The full sequence of events is implemented in the matlab script, do_registration.  Each section of the script should be run in sequence, though not all at once, i.e. don't run the command do_registratoin, but evaluate each section in turn. Sections are delimited by' %%'. 
-% do_registration first requests the subject ID. All data for a given subject will be placed in the folder [subject_id]fsl.anat
+% For parcellation, SubNuclear uses FSL's module, FIRST, to acquire a gross parcellation of major subcortical structures. These are 
+% then coregistered with atlas-derived objects which contain finer-scale structures.  The full sequence of events is 
+% implemented in the matlab script, do_registration.  Each section of the script should be run in sequence, though not 
+% all at once, i.e. don't run the command do_registration, but evaluate each section in turn. Sections are delimited 
+% by' %%'. 
+% do_registration first requests the subject ID. All data for a given subject will be placed in the folder 
+% [subject_id]fsl.anat
 %
 %%% FSL
 % 
-% Subcortical parcellation uses the FIRST module of  FSL (http://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FIRST/UserGuide), implemented in the script fsl_anat. Obviously this means that FSL has to be installed and in the command line path. FIRST provides a gross parcellation of all the major subcortical structures. Accuracy is not 100%, so in general these parcellations will have to be improved with manual editing.  The fsl scripts are self-contained and are generated and run with the matlab command: 
+% Subcortical parcellation uses the FIRST module of  FSL (http://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FIRST/UserGuide), implemented in 
+% the script fsl_anat. Obviously this means that FSL has to be installed and in the command line path. FIRST provides a gross 
+% parcellation of all the major subcortical structures. Accuracy is not 100%, so in general these parcellations will have to be
+% improved with manual editing.  The fsl scripts are self-contained and are generated and run with the matlab command: 
 %  
 
        run_fsl_script
 
 %%%
-% You will be prompted to give the preop and postop MR images, which can usually be found on the  HBRL data server  in the .../Images/Image_processing subfolder of a given subject's data folder. Running the complete script takes about an hour on the computational server. While this is running you can begin to choose control points for the warping between preop and postop brains (next section).  
+% You will be prompted to give the preop and postop MR images, which can usually be found on the  HBRL data server  in the 
+% .../Images/Image_processing subfolder of a given subject's data folder. Running the complete script takes about an hour on the 
+% computational server. While this is running you can begin to choose control points for the warping between preop and postop brains 
+% (next section).  
 % The result of the script will be:
 %
 % # The original preop MR in standard orientation ( _sid_fsl.anat/T1.nii.gz)
-% # Additional volumes with the  original image linearly and non-linearly  coregistered with the MNI152 standard brain, as well as transforms and displacement fields. 
+% # Additional volumes with the  original image linearly and non-linearly  coregistered with the MNI152 standard brain, as well as 
+% transforms and displacement fields. 
 % # Volumes with labels for parcellated structures.
 % # Meshes for each extracted structure, contained in .vtk files.   
 % 
 %%% Load Data
-% 	Meshes can be loaded into the current volume space by right clicking on the mesh list and selecting “Add” or by invoking vol.addmesh at the command line. This will allow you to select a .vtk file, which contains the mesh.  Matlab TriRep objects can also be imported using vol.addmesh(TR), where TR is a TriRep object.	After the FSL parcellation is complete, do_registration loads the left and right amygdala and hippocampus  meshes. 
+% 	Meshes can be loaded into the current volume space by right clicking on the mesh list and selecting “Add” or by invoking 
+% vol.addmesh at the command line. This will allow you to select a .vtk file, which contains the mesh.  Matlab TriRep objects can also
+% be imported using vol.addmesh(TR), where TR is a TriRep object.	After the FSL parcellation is complete, do_registration loads the left 
+% and right amygdala and hippocampus  meshes. 
 % 
 % # Editing Meshes
-%    To manually edit the amygdala meshes, first create a copy of the mesh you want to edit then make sure the “Adjust mesh” radio button is enabled. Select the mesh in the mesh list window. Meshes can be edited in three ways:
+%    To manually edit the amygdala meshes, first create a copy of the mesh you want to edit then make sure the “Adjust mesh” 
+% radio button is enabled. Select the mesh in the mesh list window. Meshes can be edited in three ways:
 % # Translation within the plan of a view. To do this click on the mesh in one of the axes and drag it.
-% # Expanding the mesh near the current point. Clicking on 'Expand' expands the mesh in the direction normal to the vertex by an amount that depends on the distance to the current point and angle the between the difference vector and the vertex normal. 
+% # Expanding the mesh near the current point. Clicking on 'Expand' expands the mesh in the direction normal to the vertex by 
+% an amount that depends on the distance to the current point and angle the between the difference vector and the vertex normal. 
 % # Similarly 'Contract' has the same effect as 'Expand' only in the opposite direction.
 
 % KTcheck
-postop = volumeview(sprintf('%s PostOp',sid),'post_op_aligned.nii.gz',ddir);
+postop = volumeview(sprintf('%s PostOp',sid),'postop_aligned.nii.gz',ddir);
 preop = volumeview(sprintf('%s PreOp',sid),'T1.nii.gz',ddir);
 postop.intensity_range = [0 400];
 mnih = readnifti('MNI152_T1_1mm.nii',true);
@@ -133,8 +151,14 @@ preop.addtransform(tr);
 helpdlg('Check the alignment of the images and select matching control points on the preop and postop brains')
 %% Atlas Coregistration for Amygdala
 % 
-% After you're satisfied with the amygdala parcellation, meshes for amygdalae are loaded from the file,  mai_template_mni_aligned.mat, and subnuclei are loaded from maiwarp2mni.mat
-%  These are extracted from “Atlas of the Human Brain” (Mai 2008). The variables, newmeshR and newmeshL contain data for right and left amygdalae, respectively, as TriRep objects  (see matlab help for details on the TriRep class). The vertices in newmeshL and newmeshR are matched to those in the FSL template mesh for the amygdala. Coregistration uses thin plate spline warping to align the vertices in the FSL generated mesh with the atlas-derived mesh. The necessary steps are carried out in do_registration. The resulting warping function is then applied to the vertices of meshes for each subnucleus in order to transform the subnuclei into the subject's image space. 
+% After you're satisfied with the amygdala parcellation, meshes for amygdalae are loaded from the file,
+% mai_template_mni_aligned.mat, and subnuclei are loaded from maiwarp2mni.mat
+%  These are extracted from “Atlas of the Human Brain” (Mai 2008). The variables, newmeshR and newmeshL contain
+%data for right and left amygdalae, respectively, as TriRep objects  (see matlab help for details on the TriRep class). 
+% The vertices in newmeshL and newmeshR are matched to those in the FSL template mesh for the amygdala. Coregistration uses 
+% thin plate spline warping to align the vertices in the FSL generated mesh with the atlas-derived mesh. The necessary steps are 
+% carried out in do_registration. The resulting warping function is then applied to the vertices of meshes for each subnucleus
+% in order to transform the subnuclei into the subject's image space. 
 % 
 
 structs = {'L Amyg' , fullfile(ddir,'first_results/T1_first-L_Amyg_first.vtk')
