@@ -114,7 +114,7 @@ structs = {'L Amyg' , fullfile(ddir,'first_results/T1_first-L_Amyg_first.vtk')
 %%% This still needs to be verified with non-standard orientations.
 trfov = transforms('trmat',Tfov(1:4,1:3),'label','tr2fov'); %Transform to field of view
 preop2fsl = preop.volumes.tr2std...    %    *trfov...
-    *transforms('trmat',Tfov(1:4,1:4)*diag([max(abs(preop.transforms(1).trmat(1:3,1:3))) 1]));
+    *transforms('trmat',Tfov(1:4,1:3)*diag([max(abs(preop.transforms(1).trmat(1:3,1:3)))]));
        
 for i = 1:length(structs)
 %     postop.addmesh(structs{i,2},structs{i,1})
