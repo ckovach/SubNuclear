@@ -26,6 +26,7 @@ classdef fitgrid < SubModules.module
         grid_size = [8 12]; %Default grid size
         default_order = [3 3; 1 3; 3 2; 1 2];  %Default point ordering
         transf; 
+%         itransf
         points; %Array of point objects
         gridpoints;
         gridscale = [ 5 5]; % Grid scale in mm
@@ -96,7 +97,6 @@ classdef fitgrid < SubModules.module
              end            
              try %%% If any labels of the form x,y are detected, then assume these are grid coordinates.
                 ptlbls = {pts.label};
-                
                 re = regexp(ptlbls,'(\d+),(\d+)','tokens','once');
                 if ~isempty([re{:}]) 
                     re(cellfun(@(x)isempty([x{:}]),re)) = {{'0','0'}};
@@ -170,7 +170,7 @@ classdef fitgrid < SubModules.module
                        
            pts = me.points;
            Y = cat(1,pts.coord);
-           vox2mm = me.parent.transforms(2);
+           vox2mm = me.parent.transforms(1);
            Y = vox2mm.tr(Y);
 %            X = get(me.tabh,'data');
            warptype = find(cell2mat(get(me.warph,'value')));
@@ -181,7 +181,7 @@ classdef fitgrid < SubModules.module
            else
                gridsc = me.gridscale;
            end
-             [pts,me.transf,itrans] = fitgrid(Y,me.grid_size,X,warptype,me.ptlabel,gridsc);     
+             [pts,me.transf] = fitgrid(Y,me.grid_size,X,warptype,me.ptlabel,gridsc);     
              pts = vox2mm.itr(cat(1,pts.coord));
            me.parent.addpoint(me.ptlabel,pts);
            
@@ -196,7 +196,7 @@ classdef fitgrid < SubModules.module
                 [xgr,ygr] = meshgrid((1:grsz(2))*5,(1:grsz(1))*5);
 
               
-                xyi = me.parent.transforms(2).itr(me.transf.tr([y(:),x(:)]));
+                xyi = vox2mm.itr(me.transf.tr([y(:),x(:)]));
 
                 q =me.parent.current.volumes.interpolant(xyi(:,1),xyi(:,2),xyi(:,3));
 
