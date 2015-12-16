@@ -1011,6 +1011,8 @@ classdef volumeview < handle
     end
      %%%
     function set.current_coord(me,a)
+
+        crT = me.current.transforms;
       
         me.current_point = crT.itr(a);
         
