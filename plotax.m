@@ -187,7 +187,7 @@ classdef plotax < handle
                 return
             end
             axlim = floor(diff(prlimax(:,1:2)));
-            axlim = min(abs(axlim),ones(size(axlim))*2e3).*sign(axlim);
+            axlim = min(abs(axlim),ones(size(axlim))*4e3).*sign(axlim);
             axlim(end+1) = 1;
             set(ax.handles.control,'Min',rg(1),'Max',rg(2));
             set(ax.handles.control,'Value',0);

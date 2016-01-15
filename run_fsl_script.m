@@ -17,7 +17,7 @@ srvdir = pwd;
 % end
 odir = sprintf('%sfsl',sid);
 if exist([odir,'.anat'],'dir')
-     yn = questdlg(sprintf('The directory %s already exists. Continuing will erase ALL contents. Continue?',[odir,'.anat']));
+     yn = questdlg(sprintf('The directory %s already exists. Running the FSL script will erase ALL contents. Rename the original directory if you do not want that to happen.\nContinue?',[odir,'.anat']));
      if ~isequal(yn,'Yes')
          return
      end

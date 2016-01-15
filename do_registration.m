@@ -52,6 +52,17 @@ xfov = str2num(out);
 xfov(:,end+1) = 1;
 Tfov = xfov\A; %%% T1_fullfov to T1 transform
 
+%%% Postop to preop linear transform
+% [res,out] = system(sprintf(com,fullfile(ddir,'postop_orig.nii.gz'),...
+%                          fullfile(ddir,'T1_fullfov.nii.gz'),...
+%                          fullfile(ddir,'post_to_pre.mat')));
+%  if res==0                    
+%     out = regexprep(out,'.*:','');
+%     poapt = str2num(out);
+%     poapt(:,end+1) = 1;
+%     Tpo2poa = poapt\A; %%% Postop orig to preop linear
+%  end
+ 
 [res,out] = system(sprintf(com,fullfile(ddir,'T1.nii.gz'),...
                          fullfile(fsl_imagedir,'MNI152_T1_1mm.nii.gz'),...
                          fullfile(ddir,'T1_to_MNI_lin.mat')));
@@ -114,7 +125,7 @@ structs = {'L Amyg' , fullfile(ddir,'first_results/T1_first-L_Amyg_first.vtk')
 %%% This still needs to be verified with non-standard orientations.
 trfov = transforms('trmat',Tfov(1:4,1:3),'label','tr2fov'); %Transform to field of view
 preop2fsl = preop.volumes.tr2std...    %    *trfov...
-    *transforms('trmat',Tfov(1:4,1:3)*diag([max(abs(preop.transforms(1).trmat(1:3,1:3)))]));
+    *transforms('trmat',Tfov(1:4,:)*diag([max(abs(preop.transforms(1).trmat(1:3,1:3))) 1])*eye(4,3));
        
 for i = 1:length(structs)
 %     postop.addmesh(structs{i,2},structs{i,1})
@@ -188,12 +199,14 @@ tr = preop.transforms(end); %This sould be the vox to MNI transform
 figure(preop.fig)
 h = msgbox('Select the Left Amygdala mesh and press OK');
 uiwait(h)
+drawnow
 warpfunL  = tpswarp(tr.itr(newmeshL.X),preop.current.meshes.trirep.X,.01);  % Left amygdala
 [iwarpfunL,AL]   = tpswarp(tr.tr(preop.current.meshes.trirep.X),newmeshL.X,.01);
 
 figure(preop.fig)
 h = msgbox('Select the Right Amygdala mesh and press OK');
 uiwait(h)
+drawnow
 warpfunR = tpswarp(tr.itr(newmeshR.X),preop.current.meshes.trirep.X,.01); % Right amygdala
 [iwarpfunR,AR] = tpswarp(tr.tr(preop.current.meshes.trirep.X),newmeshR.X,.01);
 
