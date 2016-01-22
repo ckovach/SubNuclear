@@ -201,6 +201,7 @@ classdef plotax < handle
             
             if get(ax.parent.fixSisterAx,'value') && updatesis
                 %Make sure sister axes show the same view 
+                    ax.sisters = ax.sisters(isa(ax.sisters,'plotax'));
                 if ~isempty(ax.sisters)
                     ax.sisters = ax.sisters(isvalid(ax.sisters));
                 end
