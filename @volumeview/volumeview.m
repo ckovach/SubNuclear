@@ -1051,9 +1051,9 @@ classdef volumeview < handle
          %%%   
          function delete(me)
              if ishandle(me.fig) && ~strcmp(get(me.fig,'BeingDeleted'),'on')
-                delete(me.fig) 
-            
+                delete(me.fig)             
              end
+             me.sisters = [];
          end
          %%%
          function destruc(me)
