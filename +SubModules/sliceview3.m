@@ -32,7 +32,7 @@ classdef sliceview3 < SubModules.module
             vv = me.parent;
             cro = vv.current_object;
             fld = class(cro);
-            indx = ismember([vv.(fld)],cro);
+            indx = ismember([vv.(fld).objectid],[cro.objectid]);
 
             if nargin < 2 || isempty(X)
                 
@@ -73,29 +73,40 @@ classdef sliceview3 < SubModules.module
              axpos = [.05 .55 axsz
                      .55 .55 axsz
                      .3 .05 axsz];
-           nfig = figure;
+           nfig = figure('toolbar','figure');
             vv.addfig(nfig);
             cols = 'rby';
             for i = 1:3
                 ax(i) = vv.addaxis(axes('position',axpos(i,:),'units','normalized','parent',nfig),false); %#ok<*AGROW>
-                ax(i).Transform = transforms('trmat', u(:,[mod((1:3)-i,3)+1, 4]));
+%                 ax(i).Transform = transforms('trmat', u(:,[mod((1:3)-i,3)+1, 4]));
+                ax(i).Transform = transforms('trmat', u(:,[ceil(i/2), ceil((i+3)/2), 4-i, 4]));
                 ax(i).setvolmat(ax(i).parent.current_point,false);
                 ax(i).crosscol = cols(i);
-
-              
+            
+                 
             end
             if addsis
                 for k = 1:length(vv.sisters)
-                    sis = SubModules.sliceview3(vv.sisters(k),X,false);
+                    sis(k) = SubModules.sliceview3(vv.sisters(k),X,false);
+                    for i = 1:3
+%                        sis.data.ax(i).sisters = [sis.data.ax(i).sisters,ax(i)];
+                         sis(k).data.ax(i).sisters = ax(i);
+%                        sisaxsis(i,k) = ax(i);
+%                         ax(i).sisters = [ax(i).sisters, sis.data.ax(i)];
+                          ax(i).sisters = sis(k).data.ax(i);
+%                         axsis(k) = sis(k).data.ax(i);
+                    end
+%                      sis(k).data.ax(i).sisters = [sis(k).data.ax(i).sisters,sisaxsis];
+          
                 end
-                for i = 1:3
-                   sis.data.ax(i).sisters = ax(i);
-                    ax(i).sisters = sis.data.ax(i);
-                   
-                end
+                  
             end
-                vv.resetaxis(ax(:)); 
-            
+            vv.resetaxis(ax(:)); 
+%             if addsis
+%                  for i = 1:3
+%                     ax(i).sisters = axsis(i,:);
+%                  end
+%             end
             
 
            
@@ -103,7 +114,7 @@ classdef sliceview3 < SubModules.module
 %             vv.plotupdate();
         end
         
-        function update(me)
+        function update(me) %#ok<MANU>
            % Updating already handled 
         end
             

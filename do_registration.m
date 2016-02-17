@@ -35,6 +35,9 @@ helpdlg('Make sure that preop and postop images are correctly aligned. If they a
 [res,out] = system('echo $FSLDIR');
 if ~isempty(out)
     fsl_imagedir = fullfile(deblank(out),'..','data','standard');
+    if ~exist(fsl_imagedir,'dir')
+        fsl_imagedir = fullfile(deblank(out),'data','standard');
+    end
     fsl_imagedir = regexprep(fsl_imagedir,'[\n]','');
 else
     fsl_imagedir = '.';
@@ -90,13 +93,13 @@ tr.label = 'vox2MNImm';
 postop.addtransform(tr);
 preop.addtransform(tr);
 
-% [res,out] = system(sprintf(com,fullfile(ddir,'postop_orig'),...
-%                          fullfile(ddir,'T1_fullfov'),...
-%                          fullfile(ddir,'post_to_pre.mat')));
-% out = regexprep(out,'.*[:)]','');
-% xp2p= str2num(out);
-% xp2p(:,end+1) = 1;
-% Tpo2pr  = A\xp2p;
+[res,out] = system(sprintf(com,fullfile(ddir,'postop_orig'),...
+                         fullfile(ddir,'T1_fullfov'),...
+                         fullfile(ddir,'post_to_pre.mat')));
+out = regexprep(out,'.*[:)]','');
+xp2p= str2num(out);
+xp2p(:,end+1) = 1;
+Tpo2pr  = A\xp2p;
 
 %save(fullfile(ddir,sprintf('%s_volview',sid)),'preop','postop'),
 
