@@ -117,7 +117,9 @@ classdef sliceview3 < SubModules.module
         function update(me) %#ok<MANU>
            % Updating already handled 
         end
-            
+        function delete(me)        
+            me.sisters =[];
+        end
         
     end
 end
