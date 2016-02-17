@@ -26,7 +26,7 @@ classdef plotax < handle
         transpose = 0;
         parent;
         axdim;
-        sisters;
+%         sisters;
         Transform = transforms('trmat',eye(4));  % Transform
         showcrossHere = true; %Show crosshairs on this axis
         showcrossThere = true; %Show crosshairs on other axes (if showcrossHere is true for them)
@@ -39,6 +39,7 @@ classdef plotax < handle
      properties (Hidden = true)
          basetr = eye(4);
          normv;
+         sisobj;
 %          gridpts;
      end
      properties (Dependent = true)
@@ -46,6 +47,7 @@ classdef plotax < handle
          normvec;
          gridpoints;
          trmat;
+         sisters;
      end
      
    methods
@@ -95,7 +97,7 @@ classdef plotax < handle
         end
         %%%
         function cleanup(me)
-           me.sisters = me.sisters(isvalid(me.sisters));
+           me.sisters = unique(me.sisters(isvalid(me.sisters)));
            
         end
         %%%
@@ -201,10 +203,10 @@ classdef plotax < handle
             
             if get(ax.parent.fixSisterAx,'value') && updatesis
                 %Make sure sister axes show the same view 
-                    ax.sisters = ax.sisters(isa(ax.sisters,'plotax'));
-                if ~isempty(ax.sisters)
-                    ax.sisters = ax.sisters(isvalid(ax.sisters));
-                end
+%                 if ~isempty(ax.sisters)
+%                     ax.sisters = ax.sisters(isa(ax.sisters,'plotax'));
+%                     ax.sisters = ax.sisters(isvalid(ax.sisters));
+%                 end
                 for i = 1:length(ax.sisters)
                    ax.sisters(i).Transform = ax.Transform;
                    ax.sisters(i).rot = ax.rot;
@@ -454,7 +456,7 @@ classdef plotax < handle
              end
              
             if get(vv.fixSisterAx,'value') && updatesis
-                 sisax = me.sisters;
+                 sisax = me.sisobj;
                  if ~isempty(sisax)
                      sisax(~isvalid(sisax))=[];
                      sisax(~ishandle([sisax.h])) = [];
@@ -462,9 +464,39 @@ classdef plotax < handle
                             sisax(kk).plotupdate(false);
                             axis(sisax(kk).h,axis(me.h))
                      end
-                     me.sisters=sisax;
+                     me.sisobj=sisax;
                  end
             end
+            
+    end
+    %%%
+    function a = get.sisters(me)
+       a = me.sisobj; 
+    end
+    
+    function  set.sisters(me,a)
+       
+       if isempty(a)
+           me.sisobj = me.sisobj([]);
+       else
+           me.makesis(a);
+       end   
+       
+    end
+      
+   
+    function makesis(me,a,reciprocal)
+      if nargin < 3
+            reciprocal =true;
+      end
+       a = a(a~=me);
+       a = a(isa(a,'plotax'));
+       me.sisobj = unique([me.sisobj(:)',a]);    
+       if reciprocal
+           for k = 1:length(a)
+              a(k).makesis(me,false);        
+           end  
+       end
     end
     
     %%%

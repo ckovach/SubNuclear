@@ -772,7 +772,7 @@ classdef volumeview < handle
      end
      
      %%%%%%%
-     function addpoint(me,label,varargin)
+     function varargout = addpoint(me,label,varargin)
           
          trfun = @(x)x;
          plotargs = {};
@@ -861,6 +861,9 @@ classdef volumeview < handle
                 set(plh,'ButtonDownFcn',@(a,b)me.meshButtonDown(a,b))
             end
          end
+         if nargout> 0
+             varargout{1} = newpt;
+         end
         me.annotationUpdate();
         me.plotupdate();
            me.updatelists();
@@ -906,7 +909,7 @@ classdef volumeview < handle
         else
             nsisobj = [];
         end
-         me.sisobj = [me.sisobj,nsisobj];
+         me.sisobj = unique([me.sisobj,nsisobj]);
          me.plotupdate();
      end        
      %%%
@@ -919,7 +922,7 @@ classdef volumeview < handle
      end
      %%%
      function b=get.sisters(me)
-         b=me.sisobj;
+         b=unique(me.sisobj);
      end
      
 
@@ -1246,7 +1249,9 @@ classdef volumeview < handle
             cro = me.current_object;
             fld = class(cro);
             indx =ismember( [me.(fld).objectid] , [cro.objectid]);
-            me.(fld)(indx).notes = str;        
+            for k = find(indx)
+                me.(fld)(k).notes = str;        
+            end
         end
 
         %%%
