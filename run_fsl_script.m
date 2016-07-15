@@ -32,7 +32,7 @@ scrfname = sprintf('run_fsl_%s.sh',sid); % bash script name
 if isequal(ext,'.gz')
     ext = '.nii.gz';
 end
-com1 = sprintf('cp %s %sT1temp_orig%s',fullfile(pthpreop,fnpreop),sid,ext);
+com1 = sprintf('fslmaths %s %sT1temp_orig%s',fullfile(pthpreop,fnpreop),sid,ext);
 com2 = sprintf('fslreorient2std %sT1temp_orig  %sT1temp',sid,sid);
 com3 = 'echo ''Linear coregistration of preop and postop images...''';
 com4 = sprintf('flirt -in %s -ref %sT1temp -o %spostop_aligned -omat %spost_to_pre.mat  -bins 256 -cost corratio -searchrx -180 180 -searchry -180 180 -searchrz -180 180 -dof 12  -interp spline &',fullfile(pthpostop,fnpostop),sid,sid,sid);

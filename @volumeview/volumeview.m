@@ -922,6 +922,9 @@ classdef volumeview < handle
      end
      %%%
      function b=get.sisters(me)
+         if ~isempty(me.sisobj)
+            me.sisobj = me.sisobj(isvalid(me.sisobj));
+         end
          b=unique(me.sisobj);
      end
      

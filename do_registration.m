@@ -26,7 +26,7 @@ postop = volumeview(sprintf('%s PostOp',sid),'postop_aligned.nii.gz',ddir);
 postop.intensity_range = [0 800];
 
 preop.sisters= postop;
-helpdlg('Make sure that preop and postop images are correctly aligned. If they aren''t than realign with FLIRT.')
+helpdlg('Make sure that preop and postop images are correctly aligned. If they aren''t then realign with FLIRT.')
 
 %% Compute the voxel to MNI coordinate transformation
 
