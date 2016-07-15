@@ -200,22 +200,28 @@ classdef plotax < handle
 %                 case 'linear'
                     ax.axdim = axlim([3 1 3 2])-1;
 %             end
-            
             if get(ax.parent.fixSisterAx,'value') && updatesis
+                if ~isempty(ax.sisters)
+                    ax.sisters = ax.sisters(isvalid(ax.sisters));
+                end
+                
                 %Make sure sister axes show the same view 
 %                 if ~isempty(ax.sisters)
 %                     ax.sisters = ax.sisters(isa(ax.sisters,'plotax'));
 %                     ax.sisters = ax.sisters(isvalid(ax.sisters));
 %                 end
-                for i = 1:length(ax.sisters)
-                   ax.sisters(i).Transform = ax.Transform;
-                   ax.sisters(i).rot = ax.rot;
-                   ax.sisters(i).transpose = ax.transpose;
-                   ax.sisters(i).setvolmat(pt,false);
+                if ~isempty(ax.sisters)
+                    for i = find(isvalid(ax.sisters))
+
+                       ax.sisters(i).Transform = ax.Transform;
+                       ax.sisters(i).rot = ax.rot;
+                       ax.sisters(i).transpose = ax.transpose;
+                       ax.sisters(i).setvolmat(pt,false);
+                    end
+
                 end
-                
             end
-         
+            
         end
     %%%
      function ptax  = vol2ax(ax,ptvol)
@@ -479,7 +485,7 @@ classdef plotax < handle
        if isempty(a)
            me.sisobj = me.sisobj([]);
        else
-           me.makesis(a);
+           me.makesis(a(isvalid(a)));
        end   
        
     end
@@ -490,7 +496,7 @@ classdef plotax < handle
             reciprocal =true;
       end
        a = a(a~=me);
-       a = a(isa(a,'plotax'));
+       a = a(isa(a,'plotax')& isvalid(a));
        me.sisobj = unique([me.sisobj(:)',a]);    
        if reciprocal
            for k = 1:length(a)
