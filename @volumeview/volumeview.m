@@ -425,8 +425,11 @@ classdef volumeview < handle
         a(a>sz) = sz(a>sz)-1;
         a(a<0) = 0;
         me.currp = a;
-        
-        for i= find(isopen(me.plotax))
+        isop  = isopen(me.plotax);
+        if ~any(isop)
+            return
+        end
+        for i = find(isop)
 %             ctrl = me.plotax(i).handles.control;
              me.plotax(i).setvolmat(a);
 
@@ -723,8 +726,8 @@ classdef volumeview < handle
          if nargin  < 2
              cleansis = true;
          end
-         me.plotax(~isvalid(me.plotax))=[];
-         me.plotax(~ishandle([me.plotax.h]))=[];
+         me.plotax(~isopen(me.plotax))=[];
+         
          for i = 1:length(me.object_types)
              fld = me.object_types{i};
              if isa(me.(fld),'plotobj') 
@@ -738,6 +741,9 @@ classdef volumeview < handle
 %          me.plotax(~ismember([me.plotax.h],[me.volumes.ploth]))=[];
          if ~isempty(me.sisobj)
             me.sisobj(~isvalid(me.sisobj)) = [];
+            %%% Remove sister objects with no open axes.
+            hasplot = arrayfun(@(x)any(isopen(x.plotax)),me.sisobj);
+            me.sisobj(~hasplot) =[];
             if cleansis
                 for i = 1:length(me.sisobj)
                    me.sisobj(i).cleanup(false); 
@@ -1056,6 +1062,9 @@ classdef volumeview < handle
              if ishandle(me.fig) && ~strcmp(get(me.fig,'BeingDeleted'),'on')
                 delete(me.fig)             
              end
+%              for k = 1:length(me.sisters)
+%                  me.sisters.sisobj(me.sisters.sisobj==me)=[];
+%              end
              me.sisters = [];
          end
          %%%

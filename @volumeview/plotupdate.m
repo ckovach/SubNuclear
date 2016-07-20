@@ -21,6 +21,13 @@
  end
  crp = me.current_point;
 
+ axs = axs(ishandle([axs.ploth]));
+ 
+ if isempty(axs)
+    warning('No axes to update...')
+    return
+ end
+ 
 me.isplotting = true;
 plh = cat(1,me.plotax.ploth);
  for k = 1:length(me.volumes)
