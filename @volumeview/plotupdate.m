@@ -20,8 +20,9 @@
      axs = me.plotax(axs);
  end
  crp = me.current_point;
-
- axs = axs(ishandle([axs.ploth]));
+ getax = isopen(me.plotax);
+ 
+ axs = axs(getax);
  
  if isempty(axs)
     warning('No axes to update...')
@@ -29,7 +30,7 @@
  end
  
 me.isplotting = true;
-plh = cat(1,me.plotax.ploth);
+plh = cat(1,axs.ploth);
  for k = 1:length(me.volumes)
      if ~me.volumes(k).show
          set(plh(:,k),'visible','off')

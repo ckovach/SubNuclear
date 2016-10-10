@@ -12,16 +12,17 @@
 
     mshow = [me.meshes.show];
     pshow = [me.points.show];
-     for k = 1:length(me.plotax)
+    axs = me.plotax(isopen(me.plotax));
+     for k = 1:length(axs)
 
 
 
-          nv = me.plotax(k).normvec;
+          nv = axs(k).normvec;
          for i = 1:length(me.meshes)
 %              show = true;
                
              if length(me.meshes(i).ploth)<k || ~ishandle(me.meshes(i).ploth(k))
-                       plh = plot(me.plotax(k).h,0,0,'.',varargin{:});
+                       plh = plot(axs(k).h,0,0,'.',varargin{:});
                     me.meshes(i).ploth(k) =plh;
                     set(plh,'ButtonDownFcn',@(a,b)me.meshButtonDown(a,b));
              end
@@ -30,7 +31,7 @@
 
                  sl = slicetri(me.meshes(i).trirep,me.current_point,nv);
 
-                 slax = me.plotax(k).vol2ax(sl);
+                 slax = axs(k).vol2ax(sl);
 %                  if isempty(slax)
 %                      show = false;
 %                  end
@@ -61,7 +62,7 @@
 %             for i = find([me.points.show])
 %                 try
                 if length(me.points(i).ploth)<k || ~ishandle(me.points(i).ploth(k))
-                    plh = plot(me.plotax(k).h,0,0,'.',varargin{:});
+                    plh = plot(axs(k).h,0,0,'.',varargin{:});
                     me.points(i).ploth(k) =plh;
                     set(plh,'ButtonDownFcn',@(a,b)me.meshButtonDown(a,b))
                 end
@@ -92,7 +93,7 @@
                              end
                          end
 
-                        plx = me.plotax(k).vol2ax(pp);
+                        plx = axs(k).vol2ax(pp);
                         plx = plx + 0./repmat(plp,1,2);
                         try
                             set(me.points(i).ploth(k),'xdata',plx(:,1),'ydata',plx(:,2),'color',cols(mod(i-1,length(cols))+1,:),'zdata',.5,'markersize',14,...
