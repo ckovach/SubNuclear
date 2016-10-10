@@ -819,7 +819,10 @@ classdef volumeview < handle
          npt = length(me.points);
          if nargin <2 || isempty(label)
             label = sprintf('Point %i',npt+1);
-            label = inputdlg('Enter Label','Label point',1,{label});           
+            label = inputdlg('Enter Label','Label point',1,{label});
+            if isempty(label)
+                return
+            end
             label = label{1};
          end      
          
