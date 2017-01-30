@@ -91,8 +91,8 @@ tr = transforms('trmat',Tmni,'label','vox2MNImm');
 % tr2 = transforms('trmat',double(mnih.vox2unit)','label','MNI2mm');
 % tr = tr1*tr2;
 tr.label = 'vox2MNImm';
-postop.addtransform(tr);
 preop.addtransform(tr);
+postop.addtransform(tr);
 
 [res,out] = system(sprintf(com,fullfile(ddir,'postop_orig'),...
                          fullfile(ddir,'T1_fullfov'),...
