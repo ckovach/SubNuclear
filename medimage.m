@@ -169,7 +169,7 @@ classdef medimage <handle
                    me.imgDat = img;
                end
                if length(me.vox2mm)>=3
-                   me.std_orientation = any(diag(me.vox2mm(1:3,1:3))~=[-1 1 1 ]');
+                   me.std_orientation = all(diag(me.vox2mm(1:3,1:3))==[-1 1 1 ]');
                end           
         end   
         %%%%%
