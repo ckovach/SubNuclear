@@ -15,9 +15,11 @@ function writevtk(vtk,fn)
 
 fid = fopen(fn,'w');
 
-vtk.header{3} = 'ASCII';
-vtk.header{2} = 'vtk output';
-
+vtk.header{3,1} = 'ASCII';
+vtk.header{2,1} = 'vtk output';
+vtk.header{1,1}='# vtk DataFile Version 3.0';
+vtk.header{4,1}='DATASET POLYDATA';
+vtk.fmt = 'float';
 for i = 1:4,
     fprintf(fid,vtk.header{i,1});
     fprintf(fid,'\n');
