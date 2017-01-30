@@ -32,7 +32,7 @@ classdef plotax < handle
         showcrossThere = true; %Show crosshairs on other axes (if showcrossHere is true for them)
         crossprop = '-'; %Line properties of view intersection as plotted in the crosshairs of other axes
         crosscol = 'g';  %Line color of view intersection as plotted in the crosshairs of other axes
-        
+        scalebar = struct('length',0,'color',[1 1 1],'position',[.9 .05],'width',.25,'handle',[]);
 %         a2vmat;
 %         v2amat;
     end
@@ -121,7 +121,8 @@ classdef plotax < handle
         end 
         %%%
         function ish = isopen(me)
-            ish = ishandle([me.h]);
+            ish =isvalid(me);
+            ish(ish) = ishandle([me(ish).h]);
         end
         %%%
         function c = children(me)
@@ -391,6 +392,8 @@ classdef plotax < handle
             end
         end
         ax.parent.plotax(ax.parent.plotax == ax) = [];
+        ax.parent.cleanup;
+        
     end
     
     
@@ -433,7 +436,8 @@ classdef plotax < handle
              crk = crk(ishandle(crk));
              if me.showcrossHere && get(vv.showcrossh,'value')
                  
-                 other_axes = vv.plotax(vv.plotax~=me);
+                 other_axes = vv.plotax(vv.plotax~=me & isopen(vv.plotax));
+                 
                  crp = vv.current_point;
                  nv = me.normvec;
                  for kk = 1:length(other_axes)
@@ -461,6 +465,21 @@ classdef plotax < handle
                  set(crk(:),'visible','off')
              end
              
+             if isprop(me,'scalebar') && me.scalebar.length>0
+                
+                 dd = @(x)sqrt(sum(x.^2,2));
+                 plotlen = dd([me.scalebar.length 0 0 ]*me.parent.transforms(1).trmat(1:3,1:3)^-1*me.trmat(1:3,1:3));
+                 axdim = axis(me.h);
+                 if ishandle(me.scalebar.handle)
+                     delete(me.scalebar.handle)
+                 end
+                 plotx = diff(axdim(1:2))*me.scalebar.position(1)+axdim(1);
+                 ploty = diff(axdim(3:4))*me.scalebar.position(2)+axdim(3);
+                 
+                 me.scalebar.handle = rectangle('position',[plotx,ploty,me.scalebar.length.*[ 1 me.scalebar.width]],...
+                                                'facecolor',me.scalebar.color,'edgecolor','none','parent',me.h);
+                 
+             end
             if get(vv.fixSisterAx,'value') && updatesis
                  sisax = me.sisobj;
                  if ~isempty(sisax)
