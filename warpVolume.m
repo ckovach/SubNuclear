@@ -1,4 +1,4 @@
-function wrpimg= warpVolume(vv,tr,sz)
+function wrpimg= warpVolume(vv,tr,targetvol)
 
 %function warpVolume(vv,tr,sz)
 %
@@ -15,8 +15,24 @@ function wrpimg= warpVolume(vv,tr,sz)
 chunksize = 1e4;
 
 if nargin < 3
-    sz = size(vv.Vol); % dimensions of input volume.
+    targetvol = vv;
+%     sz = size(vv.Vol); % dimensions of input volume.
 end
+
+switch class(targetvol)
+
+    case 'medimage'
+        wrpimg = medimage(targetvo);
+    otherwise
+        wrpimg = medimage(targetvol.current.volumes.image);
+end
+
+if ~isnumeric(targetvol)
+    sz = size(wrpimg.Data);
+else
+    sz = targetvol;
+end
+
 
 [J,I,K] = meshgrid(1:sz(2),1:sz(1),1:sz(3));
 
@@ -36,6 +52,5 @@ delete(h)
 
 vol = reshape(vv.current.volumes.interpolant(IJKtr),sz);
 
-wrpimg = medimage(vv.current.volumes.image);
 wrpimg.Data = vol;
 wrpimg.file = ['warped_',wrpimg.file];
