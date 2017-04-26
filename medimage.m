@@ -61,16 +61,21 @@ classdef medimage <handle
                     me.(pr{k}) = varargin{1}.(pr{k});
                 end
                 return
-            elseif nargin > 0
+            elseif nargin > 0 && exist(varargin{1},'file')
+                [pth,fn,ext] = fileparts(varargin{1});
+                me.file = [fn,ext];
+                me.path = pth;
+            elseif nargin>0
                 me.Label = varargin{1};
             end
+            
             if nargin > 1
                 me.file = varargin{2};
             end
             if nargin > 2
                 me.path = varargin{3};
             end
-            if nargin <2
+            if nargin <2 && ~exist(fullfile(me.path,me.file),'file')
                 me.asgnData;
             else
                 me.asgnData(fullfile(me.path,me.file));
@@ -90,7 +95,7 @@ classdef medimage <handle
             if nargin > 1 && (isnumeric(a) || islogical(a))
                 me.imgDat = a;
             else
-                if nargin < 2 || isempty(a) || exist(a,'dir')
+                if nargin < 2  || isempty(a) || exist(a,'dir')
                      if nargin >= 2
                             me.path = a;
                      end
