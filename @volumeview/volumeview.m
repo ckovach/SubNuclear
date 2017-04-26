@@ -552,8 +552,9 @@ classdef volumeview < handle
         end
      end
      %%
-     function addmesh(me,trirep,label,varargin)
+     function meshout=addmesh(me,trirep,label,varargin)
          nmesh = length(me.meshes);
+         meshout = me.meshes([]);
           if nargin <3 
             label = {sprintf('mesh %i',nmesh+1)};
           elseif ~iscell(label)
@@ -597,6 +598,9 @@ classdef volumeview < handle
                 if nargin < 3
                     me.renameobj(fn{kk});
                 end
+                if nargout>0
+                    meshout(end+1)=me.meshes(nmesh+1);
+                end
              end
          elseif isa(trirep,'meshes')
             for i = 1:length(trirep)
@@ -617,6 +621,9 @@ classdef volumeview < handle
                     me.meshes(end).ploth(k) =plh;
                     set(plh,'ButtonDownFcn',@(a,b)me.meshButtonDown(a,b))
                end
+                 if nargout>0
+                    meshout(end+1)=newm;
+                end
          
             end
          else
@@ -630,7 +637,9 @@ classdef volumeview < handle
                     me.meshes(end).ploth(k) =plh;
                     set(plh,'ButtonDownFcn',@(a,b)me.meshButtonDown(a,b))
                end
-
+               if nargout>0
+                    meshout(end+1)=me.meshes(end);
+                end
 %              me.meshes(end)
 %              error('Input must be a trirep object, a file name, or a mesh structure');
          end
