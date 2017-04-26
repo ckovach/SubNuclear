@@ -105,5 +105,5 @@ while doread
     end
 
 end
-fclose(fid)
+fclose(fid);
     
