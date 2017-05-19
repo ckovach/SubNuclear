@@ -60,6 +60,7 @@ for kk = 1:nrep
         axes(ax2)
         pp = m2plot3(newmesh.X(edgi(:,1),:),newmesh.X(edgi(:,2),:));
         arrayfun(@(pp,col)set(pp,'color',jt(col,:)),pp,coli(edgd))
+        axis equal vis3d
 %          sm = arrayfun(@(xi,x) z2nan(ismember((1:size(newmesh.X,1))',xi{1})*(x+eps)),newmesh.edgeAttachments(edgi),(edgd-edgd0).^2,'uniformoutput',0);
 %         edgE = nanmean([sm{:}],2);
 %         trmesh(newmesh,edgE)
@@ -72,7 +73,7 @@ for kk = 1:nrep
     %     va = newmesh.vertexAttachments;
     %     vns= cellfun(@(x)mean(fns(x,:)),va,'uniformoutput',0);
     %     vns = cat(1,vns{:});
-
+        drawnow
         for ki = 1:size(newmesh.X,1)
 
             k = rv(ki);
