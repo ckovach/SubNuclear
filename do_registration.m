@@ -56,7 +56,7 @@ xfov = str2num(out);
 xfov(:,end+1) = 1;
 Tfov = xfov\A; %%% T1_fullfov to T1 transform
 
-%%% Postop to preop linear transform
+% %% Postop to preop linear transform
 % [res,out] = system(sprintf(com,fullfile(ddir,'postop_orig.nii.gz'),...
 %                          fullfile(ddir,'T1_fullfov.nii.gz'),...
 %                          fullfile(ddir,'post_to_pre.mat')));
@@ -198,7 +198,7 @@ load maiwarp2mni  % Atlas warped into MNI space based on FSL meshes
 load mai_template_mni_aligned newmeshR newmeshL% tmpl2maimatR tmpl2maimatL % Atlas with vertices matcehd to FSL vertices
 
 %%
-tr = preop.transforms(end); %This sould be the vox to MNI transform
+tr = preop.transforms(3); %This sould be the vox to MNI transform
 
 figure(preop.fig)
 h = msgbox('Select the Left Amygdala mesh and press OK');

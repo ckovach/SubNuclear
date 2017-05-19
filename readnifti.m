@@ -54,7 +54,7 @@ if ~isequal(hdat.sizeof_hdr,348) % hdat.sizeof_hdr should always be 348. If that
     hdat.endian = 'big';
 end
 
-datafmts = {'ubit1','uchar','int16','int32','single','double','double[2]','double[3]','char','uint16','uint32','int32','uint64','float128','double[2]','float128[2]'};
+datafmts = {'ubit1','uchar','int16','int32','single','double','double','double','char','uint16','uint32','int32','uint64','float128','double[2]','float128[2]'};
 
     
 %%
