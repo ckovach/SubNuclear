@@ -88,7 +88,7 @@ if affine
     tr2tmpl = template2trMat^-1;
     tr2tmpl = tr2tmpl(:,1:3);
     
-    trsphtr = TriRep(templateTr.Triangulation,shrink(template2tr(templateTr.X),.9));
+%     trsphtr = TriRep(templateTr.Triangulation,shrink(template2tr(templateTr.X),.9));
 else
     template2tr = @(x)x;
 end
