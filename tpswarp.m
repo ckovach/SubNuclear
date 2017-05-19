@@ -7,7 +7,7 @@ function [warpfun,d,nlfun,D] = tpswarp(X1,X2,reg,dim)
 %      Xfrom : row matrix of coordinates in the starting space.
 %      Xto:   coordinates in the target space.
 %      reg:  regularization term (default reg=0). For large values warping
-%            approaches an affine transformation and for reg=0 its fits
+%            approaches an affine transformation and for reg=0 it fits
 %            the control points exactly.
 %      dim: dimensionality of the warping space (default is the lower
 %           dimensionality of X1 and X2)
@@ -59,7 +59,8 @@ KX = @(x)tpsmat(x,X1,dim);
 [Q,R] = qr(pad1(X1));
 Q1 = Q(:,1:size(X1,2)+1);
 Q2 = Q(:,size(X1,2)+2:end);
-R = R(1:size(X1,2)+1,:);
+ R = R(1:size(X1,2)+1,:);
+%R = R(1:rank(X1)+1,:);
 TPScoef = Q2*(((Q2'*KX(X1)*Q2+reg*eye(size(Q2,2))))'\(Q2'*X2));
 d = R^-1*Q1'*(X2-KX(X1)*TPScoef);
 nlfun = @(x)KX(x)*TPScoef;
