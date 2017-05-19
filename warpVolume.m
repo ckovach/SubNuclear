@@ -22,7 +22,7 @@ end
 switch class(targetvol)
 
     case 'medimage'
-        wrpimg = medimage(targetvo);
+        wrpimg = medimage(targetvol);
     otherwise
         wrpimg = medimage(targetvol.current.volumes.image);
 end
