@@ -32,7 +32,7 @@ if ~iscell(fns)
     fns = {fns};
 end
 
-for kk = 1:length(fname)
+for kk = 1:length(fns)
     fn = fns{kk};
     fid = fopen(fn,'r');
     vtk = struct('header',{{}});
