@@ -40,11 +40,13 @@ classdef sliceview3 < SubModules.module
                     case {'points','lines'}
 
 
-                        X = cat(1,vv.points(indx).coord);
+%                         X = cat(1,vv.points(indx).coord);
+                        X = vv.transforms(1).tr(cat(1,vv.points(indx).coord));
 
                     case 'meshes'
                         decell = @(x)cat(1,x{:});
-                        X = decell( arrayfun(@(x) x.trirep.X, vv.meshes(indx),'uniformoutput',0));
+%                         X = decell( arrayfun(@(x) x.trirep.X, vv.meshes(indx),'uniformoutput',0));
+                        X = vv.transforms(1).tr(decell( arrayfun(@(x) x.trirep.X, vv.meshes(indx),'uniformoutput',0)));
 %                     case {'volumes','transforms'}
                         
                     otherwise
@@ -64,7 +66,8 @@ classdef sliceview3 < SubModules.module
             end
 
             pt = mean(X);
-            vv.current_point = pt;
+%             vv.current_point = pt;
+            vv.current_point = vv.transforms(1).itr(pt);
             [u,~]= svd(cov(X));
 %             nv = u(:,3)';
             u(4,4) = 1;
@@ -78,12 +81,12 @@ classdef sliceview3 < SubModules.module
             cols = 'rby';
             for i = 1:3
                 ax(i) = vv.addaxis(axes('position',axpos(i,:),'units','normalized','parent',nfig),false); %#ok<*AGROW>
-%                 ax(i).Transform = transforms('trmat', u(:,[mod((1:3)-i,3)+1, 4]));
-                ax(i).Transform = transforms('trmat', u(:,[ceil(i/2), ceil((i+3)/2), 4-i, 4]));
-                ax(i).setvolmat(ax(i).parent.current_point,false);
+%                 ax(i).Transform = transforms('trmat', u(:,[ceil(i/2), ceil((i+3)/2), 4-i, 4]));
+                ax(i).Transform =  vv.transforms(1)*transforms('trmat', u(:,[ceil(i/2), ceil((i+3)/2), 4-i, 4]));
+                ax(i).setvolmat(vv.transforms(1).tr(ax(i).parent.current_point),false);
                 ax(i).crosscol = cols(i);
             
-                 
+                
             end
             if addsis
                 for k = 1:length(vv.sisters)
