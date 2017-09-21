@@ -42,12 +42,14 @@ classdef sliceview < SubModules.module
                 switch class(cro)
                     case {'points','lines'}
 
+    
+                   X = vv.transforms(1).tr(cat(1,vv.points(indx).coord));
 
-                        X = cat(1,vv.points(indx).coord);
 
                     case 'meshes'
                         decell = @(x)cat(1,x{:});
-                        X = decell( arrayfun(@(x) x.trirep.X, vv.meshes(indx),'uniformoutput',0));
+                        X = vv.transforms(1).tr(decell( arrayfun(@(x) x.trirep.X, vv.meshes(indx),'uniformoutput',0)));
+
 %                     case {'volumes','transforms'}
                         
                     otherwise
@@ -67,7 +69,8 @@ classdef sliceview < SubModules.module
             end
 
             pt = mean(X);
-            vv.current_point = pt;
+%             vv.current_point = pt;
+            vv.current_point = vv.transforms(1).itr(pt);
             [u,~]= svd(cov(X));
             nv = u(:,3)';
             u(4,4) = 1;
@@ -98,9 +101,11 @@ classdef sliceview < SubModules.module
             axh = axes;
             ax=vv.addaxis(axh); 
             for k = 1:length(ax)
-                ax(k).Transform = transforms('trmat', u);
+                ax(k).Transform = vv.transforms(1)*transforms('trmat', u);
 %                 ax(k).normvec=nv;
-                ax(k).setvolmat;
+%                 ax(k).setvolmat;
+                ax(k).setvolmat(vv.transforms(1).tr(ax(k).parent.current_point),false);
+
             end        
 %             szsl = size(sl);
 %             axlim(end+1) = 0;
