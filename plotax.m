@@ -32,7 +32,7 @@ classdef plotax < handle
         showcrossThere = true; %Show crosshairs on other axes (if showcrossHere is true for them)
         crossprop = '-'; %Line properties of view intersection as plotted in the crosshairs of other axes
         crosscol = 'g';  %Line color of view intersection as plotted in the crosshairs of other axes
-        scalebar = struct('length',0,'color',[1 1 1],'position',[.9 .05],'width',.25,'handle',[]);
+        scalebar = struct('length',10,'color',[1 1 1],'position',[.1 .05],'width',.25,'handle',[]);
 %         a2vmat;
 %         v2amat;
     end
