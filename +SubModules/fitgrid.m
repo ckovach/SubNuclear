@@ -33,6 +33,7 @@ classdef fitgrid < SubModules.module
     end
     properties (SetAccess = private, Hidden = true)
         fig;
+        resultax;
         szh;
         tabh;  
         buth;
@@ -105,7 +106,8 @@ classdef fitgrid < SubModules.module
                     me.gridpoints = grpt;
                     me.usedefault = false;
                     set(me.tabh,'data',cat(2,{me.points.label}',num2cell(grpt)));
-      
+                    me.grid_size = max(grpt); 
+                    set(me.szh,'data',me.grid_size);
                 end
              catch cerr
                  warning('Caught error ''%s''',cerr.message)
@@ -191,7 +193,8 @@ classdef fitgrid < SubModules.module
                 grp = me.gridpoints;
                 grsz = me.grid_size ;
                 pldim = 5*kron(max(me.grid_size)*[1 1],[-1 2]);
-                [x,y] = meshgrid(pldim(3):pldim(4),pldim(1):pldim(2));
+                voxdim = prod(diag(me.parent.transforms(1).trmat))^(1/3); 
+                [x,y] = meshgrid(pldim(3):voxdim:pldim(4),pldim(1):voxdim:pldim(2));
              
                 [xgr,ygr] = meshgrid((1:grsz(2))*5,(1:grsz(1))*5);
 
@@ -205,7 +208,9 @@ classdef fitgrid < SubModules.module
 
                 q = reshape(q,size(x));
                 %%%
-                figure, imagesc(x([1 end]),y([1 end]),q);
+                fig = figure('pointer','fullcrosshair'); 
+                me.resultax.axh = axes;%('ButtonDownFcn',@(varargin)me.resultAxisCallback(varargin{:}));
+                imagesc(x([1 end]),y([1 end]),q,'ButtonDownFcn',@(varargin)me.resultAxisCallback(varargin{:}));
                 caxis(me.parent.intensity_range)
                 colormap gray
                  colormap gray, axis xy, 
@@ -224,6 +229,21 @@ classdef fitgrid < SubModules.module
                delete(me.fig);
            end
            
+        end
+        function resultAxisCallback(me,varargin)
+            
+            cp = get(me.resultax.axh,'currentpoint');
+            cp = cp(1,[2 1]);
+            if isfield(me.resultax,'pth') && ishandle(me.resultax.pth)
+                set(me.resultax.pth,'ydata',cp(1),'xdata',cp(2));
+            else
+                hold on
+                me.resultax.pth = plot(me.resultax.axh,cp(2),cp(1),'g+');
+            end
+            vv = me.parent;
+            vvx = me.transf.tr(cp);
+            vv.current_point = vv.transforms(1).itr(vvx);
+            
         end
     end
 end
