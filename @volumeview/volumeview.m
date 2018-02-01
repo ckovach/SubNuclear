@@ -604,7 +604,7 @@ classdef volumeview < handle
              end
          elseif isa(trirep,'meshes')
             for i = 1:length(trirep)
-                 props = setdiff(properties(pt),{'objectid','ploth'});
+                 props = setdiff(properties(trirep),{'objectid','ploth'});
 %                 props = properties(trirep);
                 newm = meshes;
                 for k = 1:length(props)
