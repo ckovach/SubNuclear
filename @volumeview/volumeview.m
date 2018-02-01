@@ -604,7 +604,8 @@ classdef volumeview < handle
              end
          elseif isa(trirep,'meshes')
             for i = 1:length(trirep)
-                props = properties(trirep);
+                 props = setdiff(properties(pt),{'objectid','ploth'});
+%                 props = properties(trirep);
                 newm = meshes;
                 for k = 1:length(props)
                     try %#ok<*TRYNC>
@@ -856,7 +857,7 @@ classdef volumeview < handle
               newpt = me.points(npt+1:end);
          else
             
-             getprops = setdiff(properties(pt),{'objectid','coord'});
+             getprops = setdiff(properties(pt),{'objectid','coord','ploth'});
              for i = 1:length(pt)
                  me.points(npt+i).objectid = me.objectiter;
                   me.points(npt+i).coord = trfun(pt(i).coord);
