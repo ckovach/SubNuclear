@@ -57,7 +57,7 @@
 
 
          if ~isempty(me.points)                
-             tol = 4; % how many pixels a point can be off the plain and still rendered
+             tol = axs(k).plottol; % how many pixels a point can be off the plain and still rendered
             for i = 1:length(me.points)
 %             for i = find([me.points.show])
 %                 try
@@ -69,8 +69,10 @@
 
                if pshow(i)
                     pp = me.points(i).coord;
-                    dp = pp-repmat(me.current_point,size(pp,1),1);
-                    plp = abs(dp*nv') < tol;
+%                     dp = pp-repmat(me.current_point,size(pp,1),1);
+%                     plp = abs(dp*nv') < tol;
+                    plx = axs(k).Transform.tr(pp);
+                    plp = abs(plx(:,3))<tol;
 %                     catch 
 %                     warning('Deleted point %s with bad coordinate',me.points(i).label)
 %                     delete(me.points(i))
