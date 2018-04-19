@@ -35,6 +35,8 @@ classdef plotax < handle
         scalebar = struct('length',10,'color',[1 1 1],'position',[.1 .05],'width',.25,'handle',[]);
 %         a2vmat;
 %         v2amat;
+        axtransform = transforms('trmat',eye(4)); % Any additional affine transformation following the transformation into the 2 view plane
+        plottol=4; % how many voxels a point can be off the plain and still rendered
     end
      properties (Hidden = true)
          basetr = eye(4);
@@ -168,16 +170,14 @@ classdef plotax < handle
             prlimax(:,3) = 0;
             prlimax(:,4) = -1;
            
-%             dlim = diff(prlimax);
-%             dlim(1,3) = 1;
-%             prlimvol = prlimax*prjmat^-1;
             vol2ax = prjmat*[eye(3,4);-prlimax(1,:)];
+%             vol2ax = prjmat;
             if any(isnan(vol2ax(:)))
                 return
             end
 %             ax.Transform = transforms('trmat',vol2ax);
 % %             ax.normvec = vol2ax(1:3,3);
-            ax.Transform.trmat = vol2ax;
+            ax.Transform.trmat = vol2ax*ax.axtransform.trmat;
             ax2vol = vol2ax^-1;
             
 %              ax.basetrmat = vol2ax;
@@ -192,15 +192,14 @@ classdef plotax < handle
             axlim = floor(diff(prlimax(:,1:2)));
             axlim = min(abs(axlim),ones(size(axlim))*4e3).*sign(axlim);
             axlim(end+1) = 1;
+            axlim = ax.axtransform.tr([zeros(1,3);axlim]);
+            
             set(ax.handles.control,'Min',rg(1),'Max',rg(2));
             set(ax.handles.control,'Value',0);
             
-%             ax.basetrmat = vol2ax;
-          
-%             switch ax.Transform.type
-%                 case 'linear'
-                    ax.axdim = axlim([3 1 3 2])-1;
-%             end
+%             ax.axdim = axlim([3 1 3 2])-1;
+            ax.axdim = round(axlim([1 2 3 4])-1);
+        
             if get(ax.parent.fixSisterAx,'value') && updatesis
                 if ~isempty(ax.sisters)
                     ax.sisters = ax.sisters(isvalid(ax.sisters));
@@ -331,7 +330,7 @@ classdef plotax < handle
         ax.handles.rotate = urt;
 %         plh = plot(axh,nan(2,(length(ax.parent.plotax)-1)),nan(2,(length(ax.parent.plotax)-1)),'color','g');
 %         ax.handles.crosshairs=plh;
-        set(axh,'ButtonDownFcn',@(a,b)me.axisupdate(a,b),'DeleteFcn',@(a,b)me.rmaxis(a,b));
+        set(axh,'ButtonDownFcn',@(a,b)ax.axisupdate(a,b),'DeleteFcn',@(a,b)ax.rmaxis(a,b));
         nax=sum( ishandle([vv.plotax.h]) & ax~=vv.plotax);
         ax.handles.crosshairs = plot(ax.h,nan(2,nax),nan(2,nax),'color','g');
         
@@ -385,9 +384,9 @@ classdef plotax < handle
         flds = ax.parent.object_types;
         for i = 1:length(flds)
             fld =flds{i};
-            for k = 1:length(me.(fld))
-                if isa(me.(fld),'plotobj')
-                    me.(fld)(k).ploth(me.plotax== ax.h) = [];
+            for k = 1:length(ax.(fld))
+                if isa(ax.(fld),'plotobj')
+                    ax.(fld)(k).ploth(ax.plotax== ax.h) = [];
                 end
             end
         end
@@ -427,7 +426,8 @@ classdef plotax < handle
             me.ploth = me.ploth(ishandle(me.ploth));
 %             plh = ismember(vol.ploth,get(me.h,'children'));
               
-            set(me.ploth,'cdata',x(:,:,[1 1 1]),'visible','on','xdata',[0 size(x,2)-1],'ydata',[0 size(x,1)-1]);                          
+%             set(me.ploth,'cdata',x(:,:,[1 1 1]),'visible','on','xdata',[0 size(x,2)-1],'ydata',[0 size(x,1)-1]);                          
+            set(me.ploth,'cdata',x(:,:,[1 1 1]),'visible','on','xdata',me.axdim([1 2]),'ydata',me.axdim([3 4]));                          
              
             %%% Now plot cross hairs whos arms depict the intersection of
             %%% all other view planes.
