@@ -238,7 +238,7 @@ classdef fitgrid < SubModules.module
                 set(me.resultax.pth,'ydata',cp(1),'xdata',cp(2));
             else
                 hold on
-                me.resultax.pth = plot(me.resultax.axh,cp(2),cp(1),'g+');
+                me.resultax.pth = plot(me.resultax.axh,cp(2),cp(1),'g+','markersize',24);
             end
             vv = me.parent;
             vvx = me.transf.tr(cp);
