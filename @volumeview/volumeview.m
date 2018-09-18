@@ -333,8 +333,12 @@ classdef volumeview < handle
          a.resetaxis;
      end
 
-     function a = Vol(me,varargin)         
-         a = me.current.volumes(1).image.Data(varargin{:});
+     function a = Vol(me,varargin)    
+         if nargin >1
+            a = me.current.volumes(1).image.Data(varargin{:});
+         else
+            a = me.current.volumes(1).image.Data;
+         end
      end
      
      %%%%
