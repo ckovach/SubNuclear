@@ -76,7 +76,7 @@ Q2 = Q(:,size(X1proj,2)+1:end);
 TPScoef = Q2*(((Q2'*KX(X1proj(:,1:end-1))*Q2+reg*eye(size(Q2,2))))'\(Q2'*X2));
 d = preProject*R^-1*Q1'*(X2-KX(X1proj(:,1:end-1))*TPScoef);
 nlfun = @(x)KX(pad1(x)*preProject(:,1:end-1))*TPScoef;
-warpfun = @(x) pad1(x)*d + nlfun(X1);
+warpfun = @(x) pad1(x)*d + nlfun(x);
 
 
  if nargout > 3
