@@ -25,10 +25,19 @@ classdef points < plotobj
                     end
                 end
             end
-            for i = 1:2:length(varargin)
-                imo.(varargin{i})=varargin{i+1};
+            if nargin > 0 && ~isempty(varargin)>0 && isa(varargin{1},'points')
+                fln = fieldnames(varargin{1});
+                
+                for i = 1:length(fln)
+                    for ii = 1:length(varargin{1});
+                        imo(ii).(fln{i}) = varargin{1}(ii).(fln{i}); 
+                    end
+                end
+            else
+                for i = 1:2:length(varargin)
+                    imo.(varargin{i})=varargin{i+1};
+                end
             end
-
         end
     end
 end
