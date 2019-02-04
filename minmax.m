@@ -5,6 +5,13 @@
 % $Author$
 % ------------------------------------------------
 
-function mnmx = minmax(X)
+function [mnmx,mnmxi] = minmax(X)
 
-mnmx = cat(1,min(X),max(X));
+if nargout <2
+    mnmx = cat(1,min(X),max(X));
+else
+   [mn,mni] = min(X);
+   [mx,mxi] = max(X);
+   mnmx = [mn;mx];
+   mnmxi = [mni;mxi];
+end
