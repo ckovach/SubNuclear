@@ -443,8 +443,7 @@ classdef plotax < handle
                  for kk = 1:length(other_axes)
                     oax = other_axes(kk);
                     if oax.showcrossThere
-%                         axl=axis(oax.h);
-                        axl = [get(oax.h,'XLim'),get(oax.h,'YLim')];
+                        axl=axis(oax.h);
                         cpax = oax.vol2ax(vv.current_point)';
                         xc = [axl(1:2)',cpax([ 2 2]);cpax([1 1]),axl(3:4)'];
                         nv2 = oax.normvec(1:3);
@@ -470,8 +469,7 @@ classdef plotax < handle
                 
                  dd = @(x)sqrt(sum(x.^2,2));
                  plotlen = dd([me.scalebar.length 0 0 ]*me.parent.transforms(1).trmat(1:3,1:3)^-1*me.trmat(1:3,1:3));
-%                  axdim = axis(me.h);
-                 axdim = [get(me.h,'XLim'),get(me.h,'YLim')];
+                 axdim = axis(me.h);
                  if ishandle(me.scalebar.handle)
                      delete(me.scalebar.handle)
                  end
@@ -548,8 +546,7 @@ classdef plotax < handle
         me.plotupdate;
         axis(me.h,'image','xy');
         if isempty(me.axdim) || max(diff(me.axdim))<2
-%              me.axdim=axis(me.h);
-              axdim = [get(me.h,'XLim'),get(me.h,'YLim')];
+             me.axdim=axis(me.h);
         end
 
     end

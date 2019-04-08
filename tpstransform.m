@@ -22,22 +22,19 @@ else
     reg = 0;
 end
 
-% %%% Use SVD to handle degenerate cases
-% [u1,l1] = svd(cov(R1));
-% P1 = u1(:,diag(l1)>eps);
-% [u2,l2] = svd(cov(R2));
-% P2 = u2(:,diag(l2)>eps);
-% R1 = R1*P1;
-% R2 = R2*P2;
+%%% Use SVD to handle degenerate cases
+[u1,l1] = svd(cov(R1));
+P1 = u1(:,diag(l1)>eps);
+[u2,l2] = svd(cov(R2));
+P2 = u2(:,diag(l2)>eps);
 
-P1 = eye(size(R1,2));
-P2 = eye(size(R2,2));
+R1 = R1*P1;
+R2 = R2*P2;
 
 [~,trmat,nldf] = tpswarp(R1,R2,reg);
 
 % trmat(size(R1,2)+1,size(R2,2)+1) = 1;
-%itrmat = trmat\eye(size(R1,2)+1);
-itrmat = pinv(trmat);
+itrmat = trmat\eye(size(R1,2)+1);
 
 pad = @(x)cat(2,x,ones(size(x,1),1));
 iwarp= tpswarp(R2,R1); % Inverse warping. NB this is not a true inverse but only an approximation
