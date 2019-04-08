@@ -54,21 +54,33 @@ if nargin < 4 || isempty(dim)
     dim = min(size(X1,2),size(X2,2));
 end
 
-KX = @(x)tpsmat(x,X1,dim);
+%%% If the first input is of deficient rank, then project into the lower
+%%% rank space
+if rank(cov(X1))<min(size(X1))
+    [u,l] = svd(cov(X1));
+    u = u(:,diag(l)./l(1)>eps);
+    u(end+1,end+1)=1;
+    preProject = [eye(size(X1,2),size(X1,2)+1);-mean(X1) 1]*u;
+else
+    preProject = eye(size(X1,2)+1);
+end
+X1proj = pad1(X1)*preProject;
 
-[Q,R] = qr(pad1(X1));
-Q1 = Q(:,1:size(X1,2)+1);
-Q2 = Q(:,size(X1,2)+2:end);
- R = R(1:size(X1,2)+1,:);
+KX = @(x)tpsmat(x,X1proj(:,1:end-1),dim);
+
+[Q,R] = qr(X1proj);
+Q1 = Q(:,1:size(X1proj,2));
+Q2 = Q(:,size(X1proj,2)+1:end);
+ R = R(1:size(X1proj,2),:);
 %R = R(1:rank(X1)+1,:);
-TPScoef = Q2*(((Q2'*KX(X1)*Q2+reg*eye(size(Q2,2))))'\(Q2'*X2));
-d = R^-1*Q1'*(X2-KX(X1)*TPScoef);
-nlfun = @(x)KX(x)*TPScoef;
+TPScoef = Q2*(((Q2'*KX(X1proj(:,1:end-1))*Q2+reg*eye(size(Q2,2))))'\(Q2'*X2));
+d = preProject*R^-1*Q1'*(X2-KX(X1proj(:,1:end-1))*TPScoef);
+nlfun = @(x)KX(pad1(x)*preProject(:,1:end-1))*TPScoef;
 warpfun = @(x) pad1(x)*d + nlfun(x);
 
 
  if nargout > 3
-     D = @(x)mdxc(x,X1);
+     D = @(x)mdxc(pad1(x)*preProject(:,1:end-1),X1*preProject(:,1:end-1));
  end
 
 %%%%
