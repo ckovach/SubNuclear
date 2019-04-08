@@ -7,9 +7,6 @@
 % $Date$
 % $Author$
 % ------------------------------------------------
-%
-% This script imports images into SubNuclear and gives examples of the basic steps involved in coregistration. 
-%Sections demarked by %% are intended to be run in sequence.
 
 %% Get Subject ID
 sid = inputdlg('Which subject?');
