@@ -14,6 +14,11 @@ classdef points < plotobj
     end
      methods
         function imo = points(varargin)
+            
+            if nargin == 1 && isempty(varargin{1})
+                imo = imo([]);
+                return
+            end
             if nargin > 0 && isnumeric(varargin{1})            
                 X = varargin{1};
                 varargin(1) = [];
