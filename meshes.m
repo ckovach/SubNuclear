@@ -14,6 +14,10 @@ classdef meshes < plotobj
     
      methods
         function imo = meshes(varargin)
+            if nargin == 1 && isempty(varargin{1})
+                imo = imo([]);
+                return
+            end
             if nargin> 0 && isa(varargin{1},'meshes')
                 fldn = fieldnames(varargin{1});
                 fldn = setdiff(fldn,{'ploth','objectid'});

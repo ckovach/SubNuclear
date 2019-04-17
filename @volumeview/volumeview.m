@@ -69,8 +69,8 @@ classdef volumeview < handle
 
  properties
 
-     meshes ;
-     points ;
+     meshes = meshes([]);
+     points = points([]);
      volumes;
      transforms ;
      parent ;
