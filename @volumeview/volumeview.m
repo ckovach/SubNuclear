@@ -1076,7 +1076,7 @@ classdef volumeview < handle
         end
          %%%   
          function delete(me)
-             if ishandle(me.fig) && ~strcmp(get(me.fig,'BeingDeleted'),'on')
+             if ~isempty(me.fig) && ishandle(me.fig) && ~strcmp(get(me.fig,'BeingDeleted'),'on')
                 delete(me.fig)             
              end
 %              for k = 1:length(me.sisters)
