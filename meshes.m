@@ -24,10 +24,16 @@ classdef meshes < plotobj
                 for k = 1:length(fldn)
                     imo.(fldn{k}) = varargin{1}.(fldn{k});
                 end
+            elseif nargin == 1 && isempty(varargin{1})
+                imo = imo([]);           
             elseif nargin>0
                 
                 for i = 1:2:length(varargin)
-                    imo.(varargin{i})=varargin{i+1};
+                    if isfield(imo,varargin{i})
+                         imo.(varargin{i})=varargin{i+1};
+                    else
+                        warning('%s is not a valid field name for a %s object.',varargin{i},class(imo))
+                    end
                 end
             end
         end
