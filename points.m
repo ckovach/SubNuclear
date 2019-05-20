@@ -29,18 +29,22 @@ classdef points < plotobj
                         imo(i) = points(X(i,:),varargin{:});
                     end
                 end
-            end
-            if nargin > 0 && ~isempty(varargin)>0 && isa(varargin{1},'points')
+             end
+             if nargin > 0 && ~isempty(varargin)>0 && isa(varargin{1},'points')
                 fln = fieldnames(varargin{1});
                 
                 for i = 1:length(fln)
-                    for ii = 1:length(varargin{1});
+                    for ii = 1:length(varargin{1})                     
                         imo(ii).(fln{i}) = varargin{1}(ii).(fln{i}); 
                     end
                 end
-            else
+             else
                 for i = 1:2:length(varargin)
-                    imo.(varargin{i})=varargin{i+1};
+                   if isfield(imo,varargin{i})
+                        imo.(varargin{i})=varargin{i+1};
+                   else
+                       warning('%s is not a valid field name for a %s object.',varargin{i},class(imo))
+                   end
                 end
             end
         end

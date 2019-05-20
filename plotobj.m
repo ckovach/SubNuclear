@@ -28,6 +28,12 @@ classdef plotobj < imobj
     
     methods
         
+        function me = plotobj(varargin)
+           
+            if nargin == 1 && isempty(varargin{1})
+                me = me([]);
+            end
+        end
         function set.linestyle(me,a)
             
             ism = ismember(a,'-:');
