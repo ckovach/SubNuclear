@@ -26,6 +26,15 @@ end
 [fnpreop,pthpreop] = uigetfile(fullfile(srvdir,'*.nii*'),'Load PREOP image');
 [fnpostop,pthpostop] = uigetfile(fullfile(pthpreop,'*.nii*'),'Load POSTOP image');
  
+if isequal(fnpostop,0)
+    prefx='#';
+   fnpostop ='postop MR]';
+    pthpostop = '[/path/to/';
+else
+    prefx='';
+ 
+end
+    
 scrfname = sprintf('run_fsl_%s.sh',sid); % bash script name
 
 [pth,fn,ext] = fileparts(fnpreop);
@@ -34,13 +43,13 @@ if isequal(ext,'.gz')
 end
 com1 = sprintf('fslmaths %s %sT1temp_orig%s',fullfile(pthpreop,fnpreop),sid,ext);
 com2 = sprintf('fslreorient2std %sT1temp_orig  %sT1temp',sid,sid);
-com3 = 'echo ''Linear coregistration of preop and postop images...''';
-com4 = sprintf('flirt -in %s -ref %sT1temp -o %spostop_aligned -omat %spost_to_pre.mat  -bins 256 -cost corratio -searchrx -180 180 -searchry -180 180 -searchrz -180 180 -dof 12  -interp spline &',fullfile(pthpostop,fnpostop),sid,sid,sid);
+com3 = [prefx,'echo ''Linear coregistration of preop and postop images...'''];
+com4 = sprintf('%sflirt -in %s -ref %sT1temp -o %spostop_aligned -omat %spost_to_pre.mat  -bins 256 -cost corratio -searchrx -180 180 -searchry -180 180 -searchrz -180 180 -dof 12  -interp spline &',prefx,fullfile(pthpostop,fnpostop),sid,sid,sid);
 com5 = sprintf('fsl_anat --weakbias  -i %sT1temp -o %s --noreorient --clobber',sid,odir);
-com6 =  sprintf('fslmaths %spostop_aligned  %s.anat%spostop_aligned',sid,odir,filesep);
-com7 =  sprintf('fslmaths %s %s.anat%spostop_orig',fullfile(pthpostop,fnpostop),odir,filesep);
-com8 =  sprintf('mv %spost_to_pre.mat  %s.anat%spost_to_pre.mat',sid,odir,filesep);
-com9 = sprintf('rm %sT1temp* %spostop_aligned.mat',sid,sid);
+com6 =  sprintf('%sfslmaths %spostop_aligned  %s.anat%spostop_aligned',prefx,sid,odir,filesep);
+com7 =  sprintf('%sfslmaths %s %s.anat%spostop_orig',prefx,fullfile(pthpostop,fnpostop),odir,filesep);
+com8 =  sprintf('%smv %spost_to_pre.mat  %s.anat%spost_to_pre.mat',prefx,sid,odir,filesep);
+com9 = sprintf('rm %sT1temp* %s%spostop_aligned.mat',sid,prefx,sid);
 % com5 = sprintf('fsl_anat --weakbias  -d %sfsl -o %sfsl --noreorient',sid,sid);
 % com2 = sprintf('flirt -in %s -ref %sfsl.anat/T1.nii.gz -o %sfsl.anat/%s -omat %s/post_to_pre  -bins 256 -cost corratio -searchrx -180 180 -searchry -180 180 -searchrz -180 180 -dof 12  -interp trilinear',fullfile(pthpostop,fnpostop),sid,sid,'post_op_aligned',odir);
 % com1 = sprintf('fsl_anat --weakbias  -i %s -o %sfsl -noreorient',fullfile(pthpreop,fnpreop),sid);
