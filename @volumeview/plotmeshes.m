@@ -107,14 +107,18 @@
                         end
                     else
                          try
-                            set(me.points(i).ploth(k),'visible','off')
+                             if strcmp(get(me.points(i).ploth(k),'visible'),'on')
+                                set(me.points(i).ploth(k),'visible','off')
+                             end
                          end
 %                          me.points(i).show = false;
                      end
                 else
 %                          me.points(i).show = false;
                           try
-                             set(me.points(i).ploth(k),'visible','off')
+                               if strcmp(get(me.points(i).ploth(k),'visible'),'on')
+                                 set(me.points(i).ploth(k),'visible','off')
+                               end
                           end
                  end
             end

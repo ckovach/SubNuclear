@@ -693,8 +693,8 @@ classdef volumeview < handle
          end
         if nargin <2 || isempty(label)
             label = 'Volume';
-            label = inputdlg('Enter Label','Label volume',1,{label});           
-            label = label{1};
+%             label = inputdlg('Enter Label','Label volume',1,{label});           
+%             label = label{1};
         end     
 %          vol.reorient2std;
          for k = 1:sz4
