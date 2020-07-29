@@ -79,7 +79,7 @@ end
 
 %% Get transformation into scanner coordinates...
 
-if hdat.qform_code == 0  % Method 1 (ANALYZE compatible)
+if hdat.qform_code == 0 && hdat.sform_code == 0   % Method 1 (ANALYZE compatible)
     T = eye(4);
 elseif hdat.sform_code == 0; % Method 2
     offset = [hdat.qoffset_x,hdat.qoffset_y,hdat.qoffset_z]';
