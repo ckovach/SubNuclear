@@ -1,9 +1,9 @@
-mnih = readnifti(fullfile(ddir,'..','MNI152_T1_1mm.nii'),true);
+% mnih = readnifti(fullfile(ddir,'..','MNI152_T1_1mm.nii'),true);
 % T = textread(fullfile(ddir,'T1_to_MNI_lin.mat'))';
-fid = fopen(fullfile(ddir,'T1_to_MNI_lin.mat'),'r');
-fcont = fread(fid,'uchar=>char')';
-fclose(fid);
-T = str2num(fcont)';
+% fid = fopen(fullfile(ddir,'T1_to_MNI_lin.mat'),'r');
+% fcont = fread(fid,'uchar=>char')';
+% fclose(fid);
+% T = str2num(fcont)';
 
 %%% Directory for freesurfer files for this subject
 freesurfer_directory = fullfile(ddir,'..','FS',sprintf('pt%s',sid));
