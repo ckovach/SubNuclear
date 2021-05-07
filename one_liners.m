@@ -1,3 +1,4 @@
+
 %%% One-liner utilities
 % ----------- SVN REVISION INFO ------------------
 % $URL$
@@ -26,9 +27,11 @@ pad = @(x) cat(2,x,ones(size(x,1),1));
 crpr = @(x,tr)cross(x(tr(:,2),:)-x(tr(:,1),:),x(tr(:,3),:)-x(tr(:,1),:));
 %compute area of a facet.
 facearea = @(tr)sqrt(sum(crpr(tr.X,tr.Triangulation).^2,2));
-
+facearea2 = @(tr)sqrt(sum(crpr(tr.Points,tr.ConnectivityList).^2,2));
 %%% Mesh and surface object plotting
 mtrisurf = @(tri,X,varargin)  trisurf(tri,X(:,1),X(:,2),X(:,3),varargin{:});
 mtrimesh = @(tri,X,varargin)  trimesh(tri,X(:,1),X(:,2),X(:,3),varargin{:});
 trsurf = @(tr, varargin)mtrisurf(tr.Triangulation,tr.X,varargin{:});
 trmesh = @(tr, varargin)mtrimesh(tr.Triangulation,tr.X,varargin{:});
+trsurf2 = @(tr, varargin)mtrisurf(tr.ConnectivityList,tr.Points,varargin{:});
+trmesh2 = @(tr, varargin)mtrimesh(tr.ConnectivityList,tr.Points,varargin{:});
