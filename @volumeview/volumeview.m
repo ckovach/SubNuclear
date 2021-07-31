@@ -443,7 +443,7 @@ classdef volumeview < handle
         try
             me.plotupdate;
         catch err
-            warning('Caught error while updating plot:\n\t%s\n',err.message)
+            warning(err.identifier,'Caught error while updating plot:\n\t%s\n',err.message)
             me.cleanup;
             me.plotupdate;
         end
