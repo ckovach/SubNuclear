@@ -910,6 +910,27 @@ classdef volumeview < handle
         me.current_object=me.info;
         
      end
+     
+     function figKeyPressFcn(me,src,evnt)
+         
+          if ~isempty(me.sisters) && ~isempty(evnt) && ~isempty(evnt.Character)&& ismember(evnt.Character,'123456789') 
+             hs = get([me.plotax.h],'parent');
+             if iscell(hs)
+                 hs = [hs{:}];
+             end
+             plax = me.plotax(find(hs==src,1));
+            
+             figs = get([plax.sisters.h],'parent');
+             if iscell(figs)
+                 figs = [figs{:}];
+             end
+             fn = str2double(evnt.Character);
+             if fn <= length(figs)
+                 figure(figs(fn))
+             end
+          end
+         
+     end
          
      %%% Make another volumeview object a sister
      function makesis(me,sis,reciprocal)
@@ -957,7 +978,7 @@ classdef volumeview < handle
         
         me.extrafigs(end+1) = nfig;
       set(nfig,'DeleteFcn',@(a,b)me.rmfig(a,b),'WindowButtonMotionFcn',@(a,b)me.wmvfn(a,b),...
-       'WindowButtonUpFcn',@(a,b)me.figButtonUp(a,b),'ButtonDownFcn',@(a,b)me.figButtonDownFcn);
+       'WindowButtonUpFcn',@(a,b)me.figButtonUp(a,b),'ButtonDownFcn',@(a,b)me.figButtonDownFcn,'KeyPressFcn',@(varargin)me.figKeyPressFcn(varargin{:}));
 
     end
     %%%
