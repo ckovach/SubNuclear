@@ -498,7 +498,10 @@ classdef plotax < handle
     end
     %%%
     function a = get.sisters(me)
-       a = me.sisobj; 
+       if ~isempty(me.sisobj)
+            me.sisobj(~isvalid(me.sisobj)) = [];
+       end
+       a = me.sisobj;
     end
     
     function  set.sisters(me,a)

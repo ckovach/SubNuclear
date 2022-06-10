@@ -110,7 +110,7 @@ classdef fitgrid < SubModules.module
                     set(me.szh,'data',me.grid_size);
                 end
              catch cerr
-                 warning('Caught error ''%s''',cerr.message)
+                 warning(cerr.identifier,'Caught error ''%s''',cerr.message)
                  me.usedefault = true;
              end
            me.szcallback();

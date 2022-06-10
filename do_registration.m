@@ -49,7 +49,7 @@ end
 
 tr2std = preop.volumes(1).tr2std; % FLIRT also computes transform from standard space;
 
-com = 'printf ''0 0 0\n1 0 0\n0 1 0\n 0 0 1'' | img2imgcoord -vox -src %s -dest %s -xfm %s';
+com = 'printf ''0 0 0\n1 0 0\n0 1 0\n 0 0 1'' | $FSLDIR/bin/img2imgcoord -vox -src %s -dest %s -xfm %s';
 A = [0 0 0 1; 1 0 0 1; 0 1 0 1; 0 0 1 1]; 
 [res,out] = system(sprintf(com,fullfile(ddir,'T1.nii.gz'),...
                          fullfile(ddir,'T1_fullfov.nii.gz'),...

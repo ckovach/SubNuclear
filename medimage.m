@@ -167,7 +167,7 @@ classdef medimage <handle
                nd = ndims(img);
                perm = 1:nd;
                e = eye(nd+1); e = e([perm,nd+1],:);
-              img = permute(img,perm);
+               img = permute(img,perm);
                me.header = hdr;
                me.vox2mm = e(1:3,1:3)*hdr.vox2unit(perm(1:3),:)*e(1:4,1:4)'^-1;
                if me.load2mem

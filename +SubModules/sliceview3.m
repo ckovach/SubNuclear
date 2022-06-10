@@ -121,7 +121,7 @@ classdef sliceview3 < SubModules.module
            % Updating already handled 
         end
         function delete(me)        
-            me.sisters =[];
+          %  me.sisters =[];
         end
         
     end

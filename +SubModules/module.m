@@ -7,7 +7,7 @@ classdef module < handle
 % directory.
 %
 % The file should contain a function whose first input argument is the
-% calling volume-view object.
+% calling volumeview object.
 % 
 % Alternatively for more sophisticated functionality create a new class
 % according to the following template:

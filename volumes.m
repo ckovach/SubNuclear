@@ -36,7 +36,7 @@ classdef volumes < plotobj
         function a = get.interpolant(me)
             if isempty(me.interpolant) 
                 X = me.image.Data;
-                me.interpolant = griddedInterpolant({0:size(X,1)-1,0:size(X,2)-1,0:size(X,3)-1},X);
+                me.interpolant = griddedInterpolant({0:size(X,1)-1,0:size(X,2)-1,0:size(X,3)-1},X,'linear','none');
             end
             a = me.interpolant;
         end
